@@ -1,0 +1,930 @@
+/* Public presentation only. Workspace controls keep their existing design tokens.
+   Shape scale: 24px sections, 16px cards, pill actions. */
+.public-site {
+  --landing-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  font-family: 'Segoe UI Variable Text', 'Segoe UI', sans-serif;
+}
+.public-site svg {
+  stroke-width: 1.6;
+}
+.public-nav {
+  max-width: 1224px;
+  margin: 24px auto 0;
+  padding: 16px 24px;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: var(--surface);
+  box-shadow: 0 8px 32px color-mix(in srgb, var(--text) 3%, transparent);
+}
+.public-nav .brand-mark {
+  box-shadow: none;
+  border-radius: 12px;
+}
+.public-nav nav a {
+  transition: color 0.25s var(--landing-ease);
+}
+.public-nav nav a:hover {
+  color: var(--primary);
+}
+.public-site .button {
+  border-radius: 999px;
+  min-height: 46px;
+  padding: 12px 22px;
+  gap: 12px;
+  transition:
+    transform 0.35s var(--landing-ease),
+    background-color 0.25s var(--landing-ease),
+    border-color 0.25s var(--landing-ease),
+    box-shadow 0.35s var(--landing-ease);
+}
+.public-site .button.primary {
+  box-shadow:
+    inset 0 1px 0 #ffffff26,
+    0 4px 12px #1261d81a;
+}
+.public-site .button:active {
+  transform: scale(0.97);
+}
+.public-site .button .cta-icon {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  margin: -6px -12px -6px 0;
+  border-radius: 50%;
+  background: #ffffff20;
+  transition: transform 0.35s var(--landing-ease);
+}
+.premium-landing {
+  overflow: clip;
+}
+.premium-landing .landing-hero {
+  max-width: 1280px;
+  padding: 80px 32px 88px;
+  grid-template-columns: 1.05fr 1fr;
+  gap: 64px;
+  overflow: visible;
+}
+.premium-landing .hero-copy h1 {
+  font-family: Bahnschrift, 'Segoe UI Variable Display', 'Segoe UI', sans-serif;
+  font-size: clamp(42px, 4.5vw, 64px);
+  line-height: 1.08;
+  letter-spacing: -2.6px;
+  font-weight: 650;
+  margin: 24px 0;
+  text-wrap: balance;
+}
+.premium-landing .hero-copy h1 em {
+  display: block;
+}
+.premium-landing .hero-copy > p {
+  font-size: 16px;
+  line-height: 1.8;
+  max-width: 440px;
+}
+.premium-landing .product-kicker {
+  font-size: 10px;
+  letter-spacing: 1.8px;
+}
+.premium-landing .hero-copy > .product-kicker {
+  display: inline-flex;
+  padding: 7px 12px;
+  border: 1px solid color-mix(in srgb, var(--primary) 18%, var(--border));
+  background: var(--tint);
+  border-radius: 999px;
+  font-size: 9px;
+  letter-spacing: 1.2px;
+}
+.premium-landing .hero-actions {
+  gap: 12px;
+  margin-top: 28px;
+}
+.premium-landing .hero-copy .hero-footnote {
+  font-size: 11px;
+  margin-top: 24px;
+}
+.premium-landing .hero-footnote svg {
+  flex-shrink: 0;
+}
+.premium-landing .hero-orbit {
+  display: none;
+}
+.hero-preview-shell {
+  position: relative;
+  padding: 8px;
+  border-radius: 24px;
+  border: 1px solid color-mix(in srgb, var(--primary) 14%, var(--border));
+  background: color-mix(in srgb, var(--primary) 5%, var(--background));
+  box-shadow: 0 32px 64px -32px color-mix(in srgb, var(--primary) 32%, transparent);
+}
+.public-site .hero-motion-button {
+  /* Motion owns transforms; CSS continues to handle colors and shadows. */
+  transition:
+    background-color 0.25s var(--landing-ease),
+    border-color 0.25s var(--landing-ease),
+    box-shadow 0.35s var(--landing-ease);
+}
+.hero-motion-button:focus-visible .cta-icon {
+  transform: translateX(3px);
+}
+.hero-preview-entrance {
+  min-width: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  :root:not([data-motion='reduce']) .hero-preview-shell .visual-app,
+  :root:not([data-motion='reduce']) .hero-preview-shell .visual-signal,
+  :root:not([data-motion='reduce']) .hero-preview-shell .visual-path,
+  :root:not([data-motion='reduce']) .hero-preview-shell .visual-code,
+  :root:not([data-motion='reduce']) .hero-preview-shell .visual-human {
+    animation: hero-evidence-enter 0.65s var(--landing-ease) both;
+  }
+  :root:not([data-motion='reduce']) .hero-preview-shell .visual-app {
+    animation-delay: 0.15s;
+  }
+  :root:not([data-motion='reduce']) .hero-preview-shell .visual-signal {
+    animation-delay: 0.25s;
+  }
+  :root:not([data-motion='reduce']) .hero-preview-shell .visual-path {
+    animation-delay: 0.35s;
+  }
+  :root:not([data-motion='reduce']) .hero-preview-shell .visual-code {
+    animation-delay: 0.45s;
+  }
+  :root:not([data-motion='reduce']) .hero-preview-shell .visual-human {
+    animation-delay: 0.55s;
+  }
+}
+@keyframes hero-evidence-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.premium-landing .product-visual {
+  transform: none;
+  animation: none;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--text) 3%, transparent);
+}
+.premium-landing .visual-window {
+  font-size: 9px;
+  padding: 16px 20px;
+}
+.premium-landing .visual-body {
+  padding: 24px;
+}
+.premium-landing .visual-app small,
+.premium-landing .code-caption {
+  font-size: 9px;
+}
+.premium-landing .visual-app h3 {
+  font-size: 19px;
+  letter-spacing: -0.5px;
+}
+.premium-landing .visual-signal {
+  margin: 24px 0;
+  padding: 16px;
+}
+.premium-landing .visual-signal strong {
+  font-size: 12px;
+}
+.premium-landing .visual-code {
+  border-radius: 10px;
+}
+.premium-landing .visual-human {
+  padding-top: 20px;
+  margin-top: 20px;
+}
+.premium-landing .visual-caption {
+  font-size: 9px;
+  margin-top: 20px;
+  letter-spacing: 0.3px;
+}
+.premium-landing .value-strip {
+  max-width: 1216px;
+  margin: auto;
+  background: transparent;
+  gap: 64px;
+  font-size: 12px;
+  padding: 24px;
+  border-bottom: 0;
+}
+.premium-landing .product-section {
+  padding: 96px 32px;
+  max-width: 1280px;
+}
+.premium-landing .section-intro {
+  max-width: 600px;
+  margin-bottom: 40px;
+}
+.premium-landing .section-intro h2,
+.premium-landing .demo-invitation h2,
+.premium-landing .closing-cta h2 {
+  font-family: Bahnschrift, 'Segoe UI Variable Display', 'Segoe UI', sans-serif;
+  font-weight: 600;
+  letter-spacing: -1.4px;
+  font-size: clamp(30px, 3vw, 42px);
+  line-height: 1.15;
+  text-wrap: balance;
+}
+.premium-landing .section-intro p {
+  font-size: 15px;
+  line-height: 1.8;
+}
+.premium-landing .benefit-grid {
+  grid-template-columns: 1.3fr 1fr;
+  gap: 24px;
+}
+.premium-landing .benefit-card {
+  position: relative;
+  border-radius: 16px;
+  padding: 32px;
+  min-height: 220px;
+  border-color: color-mix(in srgb, var(--primary) 8%, var(--border));
+  transform-style: preserve-3d;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--surface) 80%, transparent),
+    4px 5px 0 -1px color-mix(in srgb, var(--primary) 12%, var(--surface)),
+    10px 14px 24px -12px color-mix(in srgb, var(--text) 14%, transparent),
+    18px 24px 44px -26px color-mix(in srgb, var(--primary) 24%, transparent);
+  transition:
+    border-color 0.35s var(--landing-ease),
+    box-shadow 0.35s var(--landing-ease);
+}
+.premium-landing .benefit-card:hover {
+  transform: none;
+}
+.benefit-card-content {
+  transform: translateZ(16px);
+}
+.premium-landing .benefit-card:first-child {
+  background: var(--tint);
+}
+.premium-landing .benefit-card:last-child {
+  background: color-mix(in srgb, var(--tint) 45%, var(--surface));
+}
+.premium-landing .benefit-card h3 {
+  font-size: 20px;
+  letter-spacing: -0.5px;
+  margin: 24px 0 8px;
+}
+.premium-landing .benefit-card p {
+  max-width: 380px;
+  font-size: 14px;
+}
+.premium-landing .feature-icon {
+  border-radius: 12px;
+  background: var(--background);
+}
+.premium-landing .workflow-section {
+  max-width: 1216px;
+  padding: 48px;
+  background: var(--surface);
+  border-radius: 24px;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--surface) 85%, transparent),
+    5px 7px 0 -1px color-mix(in srgb, var(--primary) 11%, var(--surface)),
+    14px 22px 36px -18px color-mix(in srgb, var(--text) 15%, transparent),
+    24px 36px 64px -34px color-mix(in srgb, var(--primary) 24%, transparent);
+}
+.workflow-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 0 0 24px;
+}
+.coordinator-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--primary);
+}
+.coordinator-label strong {
+  display: block;
+  color: var(--text);
+  font-size: 13px;
+}
+.coordinator-label span {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+}
+.workflow-playback {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.workflow-playback > span {
+  color: var(--muted);
+  font-size: 10px;
+  margin-right: 8px;
+}
+.public-site .workflow-playback .button {
+  min-height: 40px;
+  padding: 8px 14px;
+  font-size: 11px;
+}
+.premium-landing .public-workflow {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 10px;
+  overflow: visible;
+  padding: 0;
+}
+.workflow-stage-slot {
+  min-width: 0;
+}
+.premium-landing .public-workflow button {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 92px;
+  padding: 12px 10px;
+  border-radius: 10px;
+  font-size: 11px;
+  gap: 4px;
+  align-content: center;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--surface) 60%, transparent),
+    2px 3px 0 -1px color-mix(in srgb, var(--primary) 14%, var(--surface)),
+    5px 8px 14px -8px color-mix(in srgb, var(--text) 22%, transparent);
+  transition:
+    background-color 0.3s var(--landing-ease),
+    color 0.3s var(--landing-ease),
+    border-color 0.3s var(--landing-ease),
+    box-shadow 0.3s var(--landing-ease);
+}
+.premium-landing .public-workflow button[aria-pressed='true'] {
+  box-shadow:
+    inset 0 1px 0 #ffffff26,
+    2px 4px 0 -1px color-mix(in srgb, var(--primary) 45%, var(--surface)),
+    0 10px 20px -10px color-mix(in srgb, var(--primary) 55%, transparent);
+}
+.premium-landing .public-workflow button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 4px;
+}
+.public-workflow button svg {
+  transition: transform 0.3s var(--landing-ease);
+}
+@media (hover: hover) {
+  .public-workflow button:hover svg {
+    transform: translateX(2px);
+  }
+}
+.public-workflow button:focus-visible svg {
+  transform: translateX(2px);
+}
+.premium-landing .public-workflow button small {
+  font-variant-numeric: tabular-nums;
+  opacity: 1;
+  margin-bottom: 12px;
+}
+.premium-landing .public-workflow button svg {
+  width: 12px;
+}
+.premium-landing .public-workflow button.stage-complete {
+  border-color: color-mix(in srgb, var(--primary) 25%, var(--border));
+}
+.premium-landing .stage-explainer {
+  border: 0;
+  border-radius: 16px;
+  margin-top: 20px;
+  padding: 32px;
+  min-height: 250px;
+  gap: 40px;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--surface) 80%, transparent),
+    3px 4px 0 -1px color-mix(in srgb, var(--primary) 8%, var(--surface)),
+    8px 12px 20px -16px color-mix(in srgb, var(--text) 16%, transparent);
+}
+.stage-detail-frame {
+  min-height: 270px;
+}
+.premium-landing .stage-explainer h3 {
+  font-size: 20px;
+  line-height: 1.4;
+  letter-spacing: -0.4px;
+}
+.stage-role {
+  font-size: 11px;
+  color: var(--primary);
+  font-weight: 600;
+}
+.workflow-safety {
+  display: flex;
+  align-items: start;
+  gap: 10px;
+  padding-top: 20px;
+  color: var(--muted);
+}
+.workflow-safety svg {
+  color: var(--primary);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.workflow-safety p {
+  font-size: 11px;
+}
+.premium-landing .public-team {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 40px;
+}
+.premium-landing .public-agent {
+  border: 0;
+  border-top: 1px solid var(--border);
+  border-radius: 0;
+  background: transparent;
+  padding: 28px 0;
+}
+.premium-landing .public-agent > div {
+  margin-bottom: 16px;
+}
+.premium-landing .public-agent .agent-icon {
+  background: var(--tint);
+  color: var(--primary);
+  border: 0;
+}
+.premium-landing .public-agent h3 {
+  font-size: 20px;
+  letter-spacing: -0.4px;
+}
+.premium-landing .public-agent details {
+  margin-top: 12px;
+  padding-top: 0;
+  border: 0;
+}
+.premium-landing .public-agent summary {
+  font-size: 12px;
+}
+.premium-landing .demo-invitation {
+  gap: 64px;
+  padding-top: 24px;
+}
+.premium-landing .video-preview {
+  position: relative;
+  overflow: hidden;
+  padding: 8px 8px 24px;
+  border-radius: 24px;
+  background: color-mix(in srgb, var(--tint) 30%, var(--surface));
+}
+.demo-workspace-image {
+  display: block;
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  object-position: top;
+  border-radius: 16px 16px 0 0;
+  border-bottom: 1px solid var(--border);
+}
+.premium-landing .preview-poster {
+  min-height: 0;
+  padding: 20px 16px 12px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  background: none;
+  margin-bottom: 0;
+  gap: 8px 12px;
+}
+.premium-landing .preview-poster strong {
+  font-size: 17px;
+}
+.premium-landing .preview-poster > span:last-child {
+  width: 100%;
+  color: var(--muted);
+  font-size: 9px;
+}
+.demo-play-mark {
+  display: grid;
+  place-items: center;
+  color: var(--primary);
+}
+.demo-play-mark svg {
+  width: 20px;
+}
+.premium-landing .video-preview > h3 {
+  display: none;
+}
+.premium-landing .video-preview > p,
+.premium-landing .video-preview > a,
+.premium-landing .video-preview > details {
+  margin-left: 16px;
+  margin-right: 16px;
+}
+.premium-landing .video-preview > a {
+  display: inline-flex;
+  margin-top: 12px;
+}
+.premium-landing .platform-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 40px;
+}
+.premium-landing .platform-grid > a {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  align-items: center;
+  border: 0;
+  border-top: 1px solid var(--border);
+  border-radius: 0;
+  background: transparent;
+}
+.premium-landing .platform-mini {
+  height: 48px;
+  width: 48px;
+  padding: 14px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--tint);
+}
+.premium-landing .platform-mini > span {
+  display: none;
+}
+.premium-landing .platform-grid > a > div {
+  padding: 24px 0 24px 20px;
+}
+.premium-landing .platform-grid small {
+  display: none;
+}
+.premium-landing .platform-grid h3 {
+  font-size: 16px;
+  margin: 0 0 4px;
+}
+.premium-landing .platform-grid p {
+  font-size: 13px;
+}
+.premium-landing .faq-section {
+  padding-top: 24px;
+}
+.premium-landing .faq-cards {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  min-width: 0;
+}
+.premium-landing .faq-item {
+  padding: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 3px 6px rgb(16 39 78 / 3%), 6px 12px 28px rgb(16 39 78 / 6%);
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+.premium-landing .faq-item summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px 24px;
+  cursor: pointer;
+  list-style: none;
+  border-radius: 15px;
+  font-size: 14px;
+}
+.premium-landing .faq-item summary::-webkit-details-marker {
+  display: none;
+}
+.premium-landing .faq-item summary:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 4px;
+}
+.premium-landing .faq-toggle {
+  display: grid;
+  place-items: center;
+  flex: 0 0 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--tint);
+  color: var(--primary);
+}
+.premium-landing .faq-toggle svg {
+  transition: transform 180ms ease;
+}
+.premium-landing .faq-item[open] {
+  border-color: color-mix(in srgb, var(--primary) 40%, var(--border));
+  box-shadow: 0 3px 6px rgb(16 39 78 / 3%), 6px 16px 32px rgb(18 97 216 / 9%);
+}
+.premium-landing .faq-item[open] .faq-toggle svg {
+  transform: rotate(45deg);
+}
+.premium-landing .faq-item p {
+  margin: 0 24px;
+  padding: 0 0 24px;
+  color: var(--muted);
+}
+@media (hover: hover) {
+  .premium-landing .faq-item:hover {
+    border-color: color-mix(in srgb, var(--primary) 35%, var(--border));
+    box-shadow: 0 4px 8px rgb(16 39 78 / 4%), 6px 16px 32px rgb(16 39 78 / 9%);
+  }
+}
+@media (max-width: 540px) {
+  .premium-landing .faq-section { gap: 24px; }
+  .premium-landing .faq-item summary { padding: 16px; gap: 12px; }
+  .premium-landing .faq-item p { margin: 0 16px; padding-bottom: 20px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .premium-landing .faq-item, .premium-landing .faq-toggle svg { transition: none; }
+}
+[data-motion='reduce'] .premium-landing .faq-item,
+[data-motion='reduce'] .premium-landing .faq-toggle svg { transition: none; }
+.premium-landing .closing-cta {
+  max-width: 1216px;
+  margin: 0 auto 64px;
+  padding: 64px 32px;
+  border-radius: 24px;
+  background: var(--tint);
+}
+.premium-landing .closing-cta h2 {
+  margin-top: 0;
+}
+.premium-landing .closing-cta p {
+  font-size: 14px;
+}
+@media (hover: hover) {
+  .public-site .button:hover {
+    transform: translateY(-2px);
+  }
+  .public-site .button:hover .cta-icon {
+    transform: translateX(3px);
+  }
+  .premium-landing .benefit-card:hover {
+    border-color: color-mix(in srgb, var(--primary) 40%, var(--border));
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, var(--surface) 80%, transparent),
+      5px 7px 0 -1px color-mix(in srgb, var(--primary) 16%, var(--surface)),
+      14px 20px 30px -12px color-mix(in srgb, var(--text) 18%, transparent),
+      22px 32px 52px -24px color-mix(in srgb, var(--primary) 24%, transparent);
+  }
+  .premium-landing .platform-grid > a:hover {
+    transform: none;
+  }
+  .premium-landing .platform-grid > a:hover h3 {
+    color: var(--primary);
+  }
+  .premium-landing .platform-grid h3 svg {
+    transition: transform 0.3s var(--landing-ease);
+  }
+  .premium-landing .platform-grid > a:hover h3 svg {
+    transform: translate(2px, -2px);
+  }
+}
+@media (max-width: 1279px) {
+  .public-nav {
+    margin-left: 24px;
+    margin-right: 24px;
+  }
+  .premium-landing .landing-hero {
+    gap: 32px;
+  }
+  .premium-landing .workflow-section,
+  .premium-landing .closing-cta {
+    margin-left: 32px;
+    margin-right: 32px;
+  }
+  .premium-landing .public-workflow {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .premium-landing .public-workflow button {
+    min-height: 72px;
+  }
+}
+@media (max-width: 800px) {
+  .public-nav {
+    border-radius: 20px;
+    padding: 16px 20px;
+    gap: 16px;
+  }
+  .premium-landing .landing-hero {
+    grid-template-columns: 1fr;
+    padding: 56px 24px 48px;
+    gap: 40px;
+  }
+  .premium-landing .hero-copy {
+    max-width: 560px;
+  }
+  .premium-landing .hero-copy h1 {
+    font-size: clamp(40px, 7.6vw, 60px);
+  }
+  .premium-landing .hero-art {
+    max-width: 560px;
+  }
+  .premium-landing .value-strip {
+    gap: 16px 32px;
+    padding: 24px;
+  }
+  .premium-landing .product-section {
+    padding: 64px 24px;
+  }
+  .premium-landing .workflow-section {
+    padding: 32px 24px;
+    margin: 0 24px;
+  }
+  .workflow-toolbar {
+    flex-wrap: wrap;
+  }
+  .premium-landing .benefit-card {
+    padding: 24px;
+  }
+  .premium-landing .stage-explainer {
+    min-height: 310px;
+  }
+  .stage-detail-frame {
+    min-height: 330px;
+  }
+  .premium-landing .demo-invitation {
+    gap: 32px;
+    padding-top: 0;
+  }
+  .premium-landing .faq-section {
+    padding-top: 0;
+  }
+  .premium-landing .closing-cta {
+    margin: 0 24px 48px;
+  }
+}
+@media (max-width: 540px) {
+  .public-nav .brand {
+    font-size: 12px;
+    gap: 6px;
+  }
+  .public-nav .brand-mark {
+    width: 28px;
+    height: 32px;
+  }
+  .public-nav .brand small {
+    display: none;
+  }
+  .public-nav-actions {
+    gap: 4px;
+  }
+  .public-site .public-nav-actions .button {
+    min-height: 36px;
+    padding: 8px 10px;
+    gap: 6px;
+    font-size: 10px;
+  }
+  .public-nav .icon-button {
+    min-width: 32px;
+  }
+  .public-nav {
+    margin: 12px 12px 0;
+    padding: 12px;
+    gap: 12px;
+    border-radius: 16px;
+  }
+  .public-nav nav {
+    font-size: 11px;
+    gap: 24px;
+  }
+  .premium-landing .landing-hero {
+    padding: 40px 20px;
+  }
+  .premium-landing .hero-copy h1 {
+    font-size: 42px;
+    letter-spacing: -1.8px;
+  }
+  .premium-landing .hero-copy > p {
+    font-size: 15px;
+  }
+  .premium-landing .hero-copy > .product-kicker {
+    font-size: 8px;
+    letter-spacing: 0.8px;
+  }
+  .premium-landing .hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .premium-landing .hero-actions .button {
+    min-width: 0;
+    flex: none;
+    min-height: 48px;
+  }
+  .premium-landing .visual-body {
+    padding: 16px;
+  }
+  .premium-landing .visual-app h3 {
+    font-size: 16px;
+  }
+  .premium-landing .visual-signal {
+    margin: 20px 0;
+    padding: 12px;
+  }
+  .premium-landing .visual-signal strong {
+    font-size: 11px;
+  }
+  .premium-landing .visual-code code {
+    font-size: 10px;
+  }
+  .premium-landing .visual-caption {
+    font-size: 8px;
+    gap: 4px;
+  }
+  .premium-landing .value-strip {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 16px;
+    padding: 24px 20px;
+  }
+  .premium-landing .product-section {
+    padding: 48px 20px;
+  }
+  .premium-landing .benefit-grid,
+  .premium-landing .public-team,
+  .premium-landing .platform-grid {
+    grid-template-columns: 1fr;
+  }
+  .premium-landing .benefit-card {
+    min-height: 0;
+  }
+  .premium-landing .section-intro {
+    margin-bottom: 28px;
+  }
+  .premium-landing .workflow-section {
+    padding: 28px 16px;
+    margin: 0 12px;
+    border-radius: 20px;
+  }
+  .workflow-playback {
+    flex-wrap: wrap;
+  }
+  .workflow-playback > span {
+    width: 100%;
+    margin: 0;
+  }
+  .premium-landing .public-workflow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .premium-landing .public-workflow button {
+    min-height: 64px;
+    display: grid;
+    grid-template-columns: 18px 1fr 12px;
+    text-align: left;
+    gap: 6px;
+    padding: 12px 8px;
+  }
+  .premium-landing .public-workflow button small {
+    margin: 0;
+  }
+  .premium-landing .stage-explainer {
+    padding: 24px 16px;
+    min-height: 400px;
+    gap: 24px;
+  }
+  .stage-detail-frame {
+    min-height: 420px;
+  }
+  .premium-landing .stage-explainer h3 {
+    font-size: 18px;
+  }
+  .premium-landing .demo-invitation {
+    padding-top: 0;
+  }
+  .demo-workspace-image {
+    height: 180px;
+  }
+  .premium-landing .faq-section {
+    padding-top: 0;
+  }
+  .premium-landing .closing-cta {
+    padding: 40px 24px;
+    margin: 0 12px 32px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .premium-landing .workflow-section,
+  .workflow-stage-slot,
+  .public-workflow button,
+  .public-workflow button svg {
+    transform: none !important;
+  }
+  .premium-landing .benefit-card,
+  .premium-landing .benefit-card-content {
+    transform: none !important;
+  }
+  .public-site .button:hover,
+  .public-site .button:active,
+  .public-site .button:hover .cta-icon {
+    transform: none;
+  }
+}
+:root[data-motion='reduce'] .premium-landing .workflow-section,
+:root[data-motion='reduce'] .workflow-stage-slot,
+:root[data-motion='reduce'] .public-workflow button,
+:root[data-motion='reduce'] .public-workflow button svg {
+  transform: none !important;
+}
+:root[data-motion='reduce'] .premium-landing .benefit-card,
+:root[data-motion='reduce'] .premium-landing .benefit-card-content {
+  transform: none !important;
+}
+:root[data-motion='reduce'] .public-site .button:hover,
+:root[data-motion='reduce'] .public-site .button:active,
+:root[data-motion='reduce'] .public-site .button:hover .cta-icon {
+  transform: none;
+}

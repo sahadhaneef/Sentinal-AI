@@ -1,0 +1,39 @@
+.scroll-stack-card { position: relative; min-width: 0; }
+.scroll-stack-number {
+  position: absolute; top: 32px; right: 32px; z-index: 2; pointer-events: none;
+  color: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; letter-spacing: 0.1em;
+}
+.scroll-stack-card .benefit-card { height: 100%; }
+.premium-landing .scroll-feature-stack { align-items: stretch; }
+@media (min-width: 1000px) and (min-height: 700px) {
+  .premium-landing .scroll-story-section {
+    display: grid; grid-template-columns: 0.8fr 1.2fr; gap: 72px; align-items: start;
+  }
+  .scroll-story-section > .section-intro { position: sticky; top: 100px; padding-bottom: 32px; }
+  .premium-landing .scroll-feature-stack { display: block; padding-bottom: 96px; }
+  .scroll-feature-stack .scroll-stack-card {
+    position: sticky; top: calc(100px + var(--stack-index) * 18px);
+    margin-bottom: 112px;
+    transform-origin: center top;
+  }
+  .scroll-feature-stack .scroll-stack-card:last-child { margin-bottom: 0; }
+  .premium-landing .scroll-feature-stack .benefit-card {
+    min-height: 350px; padding: 40px;
+    /* Solid card base prevents covered copy from showing through the stack. */
+    background-color: var(--surface);
+  }
+  .scroll-stack-number { top: 40px; right: 40px; }
+  .premium-landing .scroll-feature-stack .benefit-card h3 { margin-top: 48px; font-size: 26px; }
+  .premium-landing .scroll-feature-stack .benefit-card p { max-width: 430px; font-size: 16px; }
+}
+@media (max-width: 999px), (max-height: 699px) {
+  .scroll-stack-card { transform: none !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-story-section > .section-intro { position: static; }
+  .scroll-feature-stack .scroll-stack-card { position: relative; top: auto; transform: none !important; margin-bottom: 24px; }
+  .premium-landing .scroll-feature-stack { padding-bottom: 0; }
+}
+:root[data-motion='reduce'] .scroll-story-section > .section-intro { position: static; }
+:root[data-motion='reduce'] .scroll-feature-stack .scroll-stack-card { position: relative; top: auto; transform: none !important; margin-bottom: 24px; }
+:root[data-motion='reduce'] .scroll-feature-stack { padding-bottom: 0; }

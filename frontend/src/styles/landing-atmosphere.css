@@ -1,0 +1,176 @@
+/* Fixed decorative plane with ambient lighting and a bounded procedural canvas.
+   Decoration stays outside the input/focus layers. */
+.premium-landing {
+  --atmosphere-blue: #1261d8;
+  --atmosphere-teal: #148b98;
+  --atmosphere-rule: color-mix(in srgb, var(--primary) 9%, transparent);
+  position: relative;
+  isolation: isolate;
+  background: transparent;
+}
+/* Public chrome stays above the fixed decorative plane across the full viewport. */
+.public-site > .public-nav,
+.public-site > .public-footer {
+  position: relative;
+  z-index: 1;
+}
+.landing-atmosphere {
+  position: fixed;
+  z-index: -1;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+  contain: strict;
+  background: var(--background);
+}
+.atmosphere-wash {
+  position: absolute;
+  inset: -12%;
+  background:
+    radial-gradient(
+      ellipse at 8% 20%,
+      color-mix(in srgb, var(--atmosphere-blue) 16%, transparent),
+      transparent 52%
+    ),
+    radial-gradient(
+      ellipse at 94% 75%,
+      color-mix(in srgb, var(--atmosphere-teal) 13%, transparent),
+      transparent 48%
+    ),
+    radial-gradient(
+      ellipse at 60% 0%,
+      color-mix(in srgb, var(--atmosphere-blue) 6%, transparent),
+      transparent 48%
+    );
+  animation: atmosphere-drift 19s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+  animation-play-state: paused;
+}
+.atmosphere-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--atmosphere-rule) 1px, transparent 1px),
+    linear-gradient(90deg, var(--atmosphere-rule) 1px, transparent 1px);
+  background-size: 96px 96px;
+  mask-image: linear-gradient(90deg, #000 0%, transparent 35%, transparent 65%, #000 100%);
+  opacity: 0.65;
+}
+.atmosphere-signal {
+  position: absolute;
+  width: 65vw;
+  height: 130vh;
+  border: 1px solid color-mix(in srgb, var(--primary) 13%, transparent);
+  border-radius: 45%;
+  box-shadow:
+    0 0 0 40px color-mix(in srgb, var(--primary) 3%, transparent),
+    0 0 0 80px color-mix(in srgb, var(--primary) 2%, transparent);
+  animation: atmosphere-signal-drift 24s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+  animation-play-state: paused;
+}
+.atmosphere-signal-one {
+  top: -48%;
+  left: -48%;
+}
+.atmosphere-signal-two {
+  right: -45%;
+  bottom: -60%;
+  animation-delay: -12s;
+  border-color: color-mix(in srgb, var(--atmosphere-teal) 15%, transparent);
+}
+.landing-atmosphere[data-running='true'] :is(.atmosphere-wash, .atmosphere-signal) {
+  animation-play-state: running;
+}
+.premium-landing .landing-hero {
+  padding-top: 40px;
+}
+.premium-landing .workflow-section {
+  background:
+    radial-gradient(
+      ellipse at 100% 0%,
+      color-mix(in srgb, var(--primary) 5%, transparent),
+      transparent 60%
+    ),
+    var(--surface);
+}
+.premium-landing .value-strip {
+  background: color-mix(in srgb, var(--surface) 75%, transparent);
+  border-radius: 16px;
+}
+.premium-landing .section-intro {
+  position: relative;
+}
+.premium-landing .section-intro::before {
+  content: '';
+  position: absolute;
+  left: -16px;
+  top: 7px;
+  width: 3px;
+  height: 36px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--primary) 35%, transparent);
+}
+:root[data-theme='dark'] .premium-landing {
+  --atmosphere-blue: #3469bd;
+  --atmosphere-teal: #168b99;
+  --atmosphere-rule: color-mix(in srgb, var(--primary) 8%, transparent);
+}
+:root[data-theme='dark'] .atmosphere-wash {
+  opacity: 0.8;
+}
+@keyframes atmosphere-drift {
+  from {
+    transform: translate3d(-2%, -1%, 0) scale(1);
+  }
+  to {
+    transform: translate3d(3%, 2%, 0) scale(1.04);
+  }
+}
+@keyframes atmosphere-signal-drift {
+  from {
+    transform: translate3d(0, -2%, 0) rotate(-8deg);
+  }
+  to {
+    transform: translate3d(4%, 3%, 0) rotate(8deg);
+  }
+}
+@media (max-width: 800px) {
+  .premium-landing .landing-hero {
+    padding-top: 32px;
+  }
+  .atmosphere-grid {
+    background-size: 72px 72px;
+    opacity: 0.45;
+  }
+}
+@media (max-width: 540px) {
+  .premium-landing .landing-hero {
+    padding-top: 28px;
+  }
+  .atmosphere-signal {
+    display: none;
+  }
+  .atmosphere-grid {
+    mask-image: linear-gradient(90deg, #000, transparent 20%, transparent 80%, #000);
+  }
+  .premium-landing .section-intro::before {
+    left: -10px;
+    width: 2px;
+    height: 28px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .landing-atmosphere :is(.atmosphere-wash, .atmosphere-signal) {
+    animation: none !important;
+    transform: none;
+  }
+}
+:root[data-motion='reduce'] .landing-atmosphere :is(.atmosphere-wash, .atmosphere-signal) {
+  animation: none !important;
+  transform: none;
+}
+@media (forced-colors: active) {
+  .landing-atmosphere {
+    display: none;
+  }
+}

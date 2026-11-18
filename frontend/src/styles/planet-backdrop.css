@@ -1,0 +1,76 @@
+/* SENTINEL's public space scene is isolated from workspace themes and API views. */
+.premium-landing {
+  --background: #f7f9fc;
+  --surface: #fff;
+  --text: #10172f;
+  --muted: #526078;
+  --border: #e3eaf3;
+  --primary: #1261d8;
+  --tint: #edf4ff;
+  --teal: #087f75;
+  --scene-scrim: #f7f9fcf5;
+  --scene-shadow: #dce8f066;
+  color: var(--text);
+}
+:root[data-theme='dark'] .premium-landing {
+  --background: #060d1d;
+  --surface: #112039;
+  --text: #edf4ff;
+  --muted: #bac8de;
+  --border: #34465f;
+  --primary: #90bdff;
+  --tint: #1b3350;
+  --teal: #70e2cf;
+  --scene-scrim: #060d1df5;
+  --scene-shadow: #060d1d66;
+}
+.landing-atmosphere { background: var(--background); }
+.planet-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; pointer-events: none; }
+.planet-canvas:not([data-renderer='webgl']) { visibility: hidden; }
+.planet-fallback {
+  position: absolute; width: min(110vw, 1350px); aspect-ratio: 1; left: 50%; top: 46%;
+  transform: translateX(-50%); border-radius: 50%;
+  background: radial-gradient(circle at 35% 24%, #86c5d0, #397a96 28%, #133653 68%);
+  box-shadow: 0 -6px 28px #72d7ed66, 0 -1px 0 #a7e9ed;
+}
+:root[data-theme='dark'] .planet-fallback { background: radial-gradient(circle at 35% 24%, #488797, #173c55 28%, #061528 68%); }
+.landing-atmosphere::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--background) 27%, transparent), transparent 40%, color-mix(in srgb, var(--background) 13%, transparent));
+  pointer-events: none;
+}
+.premium-landing .hero-scene { background: transparent; box-shadow: none; }
+.premium-landing .hero-scene-background { background: transparent; }
+.premium-landing .hero-reading-veil { background: linear-gradient(90deg, var(--scene-scrim), transparent 85%); }
+.premium-landing .landing-hero { padding-bottom: 180px; }
+.premium-landing .hero-preview-shell { box-shadow: 0 22px 60px -24px #0009; }
+.premium-landing .product-visual { background: var(--surface); }
+.premium-landing .product-section > .section-intro {
+  background: var(--scene-scrim);
+  border-radius: 16px;
+  box-shadow: 0 0 32px 12px var(--scene-shadow);
+}
+.premium-landing .demo-invitation > div:first-child { background: var(--scene-scrim); border-radius: 16px; box-shadow: 0 0 32px 12px var(--scene-shadow); }
+.premium-landing .public-agent { --role-ink: color-mix(in srgb, var(--flow-a) 35%, var(--text)); }
+.premium-landing .benefit-signal .feature-icon { color: color-mix(in srgb, var(--benefit-color) 40%, var(--text)); }
+.public-site .premium-landing .button.primary { background: #1261d8; border-color: #4085ed; color: #fff; }
+.premium-landing .stage-role { color: color-mix(in srgb, var(--stage-color) 40%, var(--text)); }
+.premium-landing .workflow-section,
+.premium-landing .product-tour-video,
+.premium-landing .faq-item,
+.premium-landing .closing-cta { border-color: var(--border); }
+.premium-landing .workspace-tile { --tile-ink: color-mix(in srgb, var(--tile-color, #90bdff) 35%, var(--text)); }
+.premium-landing .hero-copy { --text: inherit; --muted: inherit; --primary: inherit; --border: inherit; }
+.premium-landing .hero-copy > .product-kicker { background: var(--tint); border-color: var(--border); color: var(--primary); }
+.public-site .premium-landing .hero-actions .button:not(.primary) { background: var(--surface); border-color: var(--border); color: var(--text); }
+.premium-landing .hero-scene .visual-caption {
+  color: var(--muted);
+  background: var(--scene-scrim);
+  border-radius: 8px;
+  padding: 6px 8px;
+}
+@media (max-width: 768px) { .premium-landing .landing-hero { padding-bottom: 80px; } }
+@media (forced-colors: active) {
+  .premium-landing { --text: CanvasText; --muted: CanvasText; --surface: Canvas; --background: Canvas; color: CanvasText; }
+  .planet-canvas, .planet-fallback { display: none; }
+}

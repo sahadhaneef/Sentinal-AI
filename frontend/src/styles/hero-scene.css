@@ -1,0 +1,56 @@
+/* Painted gradients remain static; only composited transforms and opacity move. */
+.hero-scene { position: relative; isolation: isolate; }
+.hero-scene-background {
+  position: absolute; z-index: -1; inset: 0; overflow: hidden;
+  pointer-events: none; user-select: none; contain: strict;
+  mask-image: linear-gradient(transparent, #000 10%, #000 75%, transparent);
+}
+.hero-aurora {
+  position: absolute; width: min(950px, 90vw); height: 750px;
+  border-radius: 50%; opacity: 0.8;
+  animation: hero-aurora-drift 20s ease-in-out infinite alternate paused;
+}
+.hero-aurora-blue {
+  top: -35%; left: -10%;
+  background: radial-gradient(ellipse, color-mix(in srgb, var(--primary) 17%, transparent), transparent 68%);
+}
+.hero-aurora-teal {
+  right: -12%; bottom: -30%;
+  background: radial-gradient(ellipse, color-mix(in srgb, var(--teal) 16%, transparent), transparent 68%);
+  animation-duration: 26s; animation-delay: -10s; animation-direction: alternate-reverse;
+}
+.hero-mesh-grid {
+  position: absolute; inset: -64px;
+  background-image: linear-gradient(color-mix(in srgb, var(--primary) 9%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--primary) 9%, transparent) 1px, transparent 1px);
+  background-size: 64px 64px; opacity: 0.5;
+  mask-image: linear-gradient(90deg, #000, transparent 40%, #000);
+  animation: hero-grid-travel 24s linear infinite paused;
+}
+.hero-cursor-light {
+  position: absolute; top: 0; left: 0; width: 640px; height: 640px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--primary) 16%, transparent), color-mix(in srgb, var(--teal) 6%, transparent) 35%, transparent 68%);
+  will-change: transform, opacity;
+}
+.hero-reading-veil {
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--background) 52%, transparent), transparent 75%);
+}
+.hero-scene[data-running='true'] :is(.hero-aurora, .hero-mesh-grid) { animation-play-state: running; }
+@keyframes hero-aurora-drift {
+  from { transform: translate3d(-4%, -3%, 0) scale(0.95); }
+  to { transform: translate3d(12%, 9%, 0) scale(1.12); }
+}
+@keyframes hero-grid-travel { to { transform: translate3d(64px, 64px, 0); } }
+@media (max-width: 768px) {
+  .hero-aurora { width: 100%; height: 600px; opacity: 0.6; }
+  .hero-mesh-grid { opacity: 0.3; }
+}
+@media (hover: none), (pointer: coarse) { .hero-cursor-light { display: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .hero-aurora, .hero-mesh-grid { animation: none; }
+  .hero-cursor-light { display: none; }
+}
+:root[data-motion='reduce'] :is(.hero-aurora, .hero-mesh-grid) { animation: none; }
+:root[data-motion='reduce'] .hero-cursor-light { display: none; }
+@media (forced-colors: active) { .hero-scene-background { display: none; } }

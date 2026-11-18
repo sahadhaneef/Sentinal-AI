@@ -1,0 +1,57 @@
+/* Stage identities carry through the handoff and its evidence panel. */
+.workflow-experience [data-stage='0'] { --stage-color: #087f6b; }
+.workflow-experience [data-stage='1'] { --stage-color: #7a42b7; }
+.workflow-experience [data-stage='2'] { --stage-color: #a36818; }
+.workflow-experience [data-stage='3'] { --stage-color: #087e96; }
+.workflow-experience [data-stage='4'] { --stage-color: #af4569; }
+.workflow-experience [data-stage='5'] { --stage-color: #265fc4; }
+.workflow-experience [data-stage='6'] { --stage-color: #467c30; }
+.workflow-experience [data-stage='7'] { --stage-color: #6552b6; }
+.premium-landing .workflow-section {
+  border: 1px solid color-mix(in srgb, var(--primary) 20%, var(--border));
+  box-shadow: 8px 10px 0 -2px color-mix(in srgb, var(--primary) 16%, var(--surface)),
+    16px 28px 42px -18px rgb(18 55 111 / 28%),
+    28px 48px 80px -28px rgb(18 97 216 / 22%);
+}
+.workflow-loop-label { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 11px; }
+.workflow-loop-label > span { width: 7px; height: 7px; background: var(--teal); border-radius: 50%; }
+.premium-landing .public-workflow button {
+  position: relative;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--stage-color) 9%, var(--surface));
+  border-color: color-mix(in srgb, var(--stage-color) 35%, var(--border));
+  color: var(--text);
+}
+.premium-landing .public-workflow button[aria-pressed='true'] {
+  background: var(--stage-color);
+  border-color: var(--stage-color);
+  color: #fff;
+  box-shadow: 3px 5px 0 color-mix(in srgb, var(--stage-color) 30%, var(--surface)),
+    0 12px 24px -10px color-mix(in srgb, var(--stage-color) 65%, transparent);
+}
+.stage-timer {
+  position: absolute; bottom: 0; left: 0; height: 4px; width: 100%;
+  background: #fff9; transform-origin: left; transform: scaleX(0);
+  animation: handoff-progress 5s linear forwards; animation-play-state: paused;
+}
+[data-running='true'] .stage-timer { animation-play-state: running; }
+.premium-landing .stage-explainer {
+  border: 1px solid color-mix(in srgb, var(--stage-color) 30%, var(--border));
+  border-left: 4px solid var(--stage-color);
+  background: linear-gradient(115deg, color-mix(in srgb, var(--stage-color) 13%, var(--surface)), var(--surface));
+  box-shadow: 5px 7px 0 -1px color-mix(in srgb, var(--stage-color) 14%, var(--surface)),
+    10px 18px 30px -14px color-mix(in srgb, var(--stage-color) 30%, transparent);
+}
+.premium-landing .stage-role { color: color-mix(in srgb, var(--stage-color) 80%, var(--text)); }
+.stage-explainer dl > div { animation: handoff-evidence 400ms 100ms both; }
+.stage-explainer dl > div + div { animation-delay: 180ms; }
+:root[data-theme='dark'] .stage-role { color: color-mix(in srgb, var(--stage-color) 40%, #fff); }
+@keyframes handoff-progress { to { transform: scaleX(1); } }
+@keyframes handoff-evidence { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: none; } }
+@media (max-width: 540px) { .workflow-loop-label { font-size: 10px; } }
+@media (prefers-reduced-motion: reduce) {
+  .stage-timer { display: none; }
+  .stage-explainer dl > div { animation: none; }
+}
+:root[data-motion='reduce'] .stage-timer { display: none; }
+:root[data-motion='reduce'] .stage-explainer dl > div { animation: none; }

@@ -1,0 +1,169 @@
+.workspace-tone-blue {
+  --tile-color: #2458b8;
+}
+.workspace-tone-green {
+  --tile-color: #227657;
+}
+.workspace-tone-violet {
+  --tile-color: #7944b7;
+}
+.workspace-tone-rose {
+  --tile-color: #a54659;
+}
+.workspace-tone-amber {
+  --tile-color: #92601e;
+}
+.workspace-tone-teal {
+  --tile-color: #13717c;
+}
+.workspace-tone-indigo {
+  --tile-color: #5061a9;
+}
+.workspace-tone-plum {
+  --tile-color: #92507e;
+}
+.workspace-explorer {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+.workspace-tile-slot {
+  min-width: 0;
+}
+.workspace-tile {
+  --tile-ink: var(--tile-color);
+  position: relative;
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) 34px;
+  align-items: center;
+  gap: 20px;
+  min-height: 156px;
+  height: 100%;
+  padding: 28px;
+  border: 1px solid color-mix(in srgb, var(--tile-color) 22%, var(--border));
+  border-left: 4px solid var(--tile-color);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--tile-color) 5%, var(--surface));
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--surface) 85%, transparent),
+    -4px 5px 0 -1px color-mix(in srgb, var(--tile-color) 15%, var(--surface)),
+    8px 14px 28px -18px color-mix(in srgb, var(--tile-color) 28%, transparent);
+  transition:
+    background-color 0.3s var(--landing-ease),
+    border-color 0.3s var(--landing-ease),
+    box-shadow 0.3s var(--landing-ease);
+}
+.workspace-tile-copy h3 {
+  font-size: 18px;
+  letter-spacing: -0.4px;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+.workspace-tile-copy p {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+.workspace-icon-window {
+  display: block;
+  height: 48px;
+  width: 48px;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 3px 8px -5px var(--tile-color);
+}
+.workspace-icon-reel {
+  display: block;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.workspace-icon-reel > span {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  color: var(--tile-ink);
+  background: color-mix(in srgb, var(--tile-color) 12%, var(--surface));
+}
+.workspace-icon-reel > span:last-child {
+  color: var(--surface);
+  background: var(--tile-ink);
+}
+.workspace-tile-arrow {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid color-mix(in srgb, var(--tile-color) 22%, var(--border));
+  border-radius: 50%;
+  color: var(--tile-ink);
+}
+.workspace-tile-arrow svg {
+  transition: transform 0.35s var(--landing-ease);
+}
+.workspace-tile:focus-visible {
+  outline: 2px solid var(--tile-ink);
+  outline-offset: 5px;
+}
+.workspace-tile:is(:hover, :focus-visible) {
+  border-color: color-mix(in srgb, var(--tile-color) 50%, var(--border));
+  background: color-mix(in srgb, var(--tile-color) 8%, var(--surface));
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--surface) 85%, transparent),
+    -7px 7px 0 -1px color-mix(in srgb, var(--tile-color) 20%, var(--surface)),
+    10px 18px 32px -18px color-mix(in srgb, var(--tile-color) 32%, transparent);
+}
+.workspace-tile:is(:hover, :focus-visible) .workspace-icon-reel {
+  transform: translateY(-48px);
+}
+.workspace-tile:is(:hover, :focus-visible) .workspace-tile-arrow svg {
+  transform: translate(2px, -2px);
+}
+:root[data-theme='dark'] .workspace-tile {
+  --tile-ink: color-mix(in srgb, var(--tile-color) 35%, #ffffff);
+}
+@media (max-width: 800px) {
+  .workspace-tile {
+    padding: 24px;
+    gap: 16px;
+    grid-template-columns: 48px minmax(0, 1fr);
+  }
+  .workspace-tile-arrow {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    width: 28px;
+    height: 28px;
+  }
+  .workspace-tile-copy h3 {
+    padding-right: 16px;
+  }
+}
+@media (max-width: 540px) {
+  .workspace-explorer {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .workspace-tile {
+    min-height: 144px;
+    padding: 24px 20px;
+    gap: 16px;
+  }
+  .workspace-tile-copy h3 {
+    font-size: 16px;
+  }
+  .workspace-tile-copy p {
+    font-size: 12px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .workspace-tile-slot,
+  .workspace-tile,
+  .workspace-icon-reel,
+  .workspace-tile-arrow svg {
+    transform: none !important;
+  }
+}
+:root[data-motion='reduce']
+  :is(.workspace-tile-slot, .workspace-tile, .workspace-icon-reel, .workspace-tile-arrow svg) {
+  transform: none !important;
+}

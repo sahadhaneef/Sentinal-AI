@@ -1,0 +1,67 @@
+[
+  {
+    "text": "Sentinel A I turns sample application errors into evidence and reviewable fixes. This walkthrough uses simulated data.",
+    "start": 0.45,
+    "end": 6.863242630385487
+  },
+  {
+    "text": "The Manager coordinates every handoff. Visit A I Agents to explore each role and its activity.",
+    "start": 7.67,
+    "end": 13.178616780045353
+  },
+  {
+    "text": "Monitoring recognizes supported errors in sample logs. Applications shows sample health and monitoring controls.",
+    "start": 13.979999999999999,
+    "end": 20.193197278911562
+  },
+  {
+    "text": "Diagnosis explains a likely cause with source evidence. Check the cited file, lines, and revision.",
+    "start": 21,
+    "end": 27.168662131519273
+  },
+  {
+    "text": "Repair proposes a focused change. Compare the exact diff with the original before deciding.",
+    "start": 27.97,
+    "end": 33.11861678004535
+  },
+  {
+    "text": "Testing checks that exact candidate. Repair and Testing shows results. Failed or missing checks block approval.",
+    "start": 33.92,
+    "end": 40.56852607709751
+  },
+  {
+    "text": "You approve or reject in Approval and Recovery. Applying requires separate confirmation. Verification checks the outcome.",
+    "start": 41.370000000000005,
+    "end": 48.453310657596376
+  },
+  {
+    "text": "Reporting records decisions, tests, and recovery outcomes, including failures and unresolved issues. No success is assumed.",
+    "start": 49.260000000000005,
+    "end": 56.70312925170069
+  },
+  {
+    "text": "The Dashboard summarizes application health, incident counts, and pending reviews. Open recent incidents to investigate.",
+    "start": 57.510000000000005,
+    "end": 64.2181179138322
+  },
+  {
+    "text": "Search and filter in Incidents. Open an issue for its overview, diagnosis, patch, tests, timeline, and report.",
+    "start": 65.02,
+    "end": 71.9431746031746
+  },
+  {
+    "text": "Incident History keeps closed examples easy to revisit, including rejected, resolved, and unresolved outcomes.",
+    "start": 72.75,
+    "end": 78.52827664399094
+  },
+  {
+    "text": "Settings controls appearance, motion, and refresh preferences. Documentation explains boundaries and links to features.",
+    "start": 79.33,
+    "end": 86.04306122448979
+  },
+  {
+    "text": "Start the introduction for orientation, or practice decisions in the interactive demo. No real code is executed.",
+    "start": 86.85000000000001,
+    "end": 93.49317460317461
+  }
+]

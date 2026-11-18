@@ -1,0 +1,46 @@
+.cinematic-field { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.hero-scene {
+  margin: 24px 16px 0;
+  border-radius: 28px;
+  background: #071725;
+  box-shadow: 0 24px 64px -28px #062b4655;
+}
+.hero-scene-background {
+  border-radius: inherit;
+  mask-image: none;
+  background: radial-gradient(ellipse at 68% 36%, #16485b 0%, #0c293e 30%, #071725 70%);
+}
+.hero-scene .hero-aurora-blue {
+  top: -24%; left: 22%; opacity: 0.8;
+  background: radial-gradient(ellipse, #358bba55, transparent 66%);
+}
+.hero-scene .hero-aurora-teal {
+  right: -18%; bottom: -34%;
+  background: radial-gradient(ellipse, #2bc5ad38, transparent 65%);
+}
+.hero-scene .hero-reading-veil {
+  background: linear-gradient(90deg, #071725b8, #07172538 48%, transparent 80%);
+}
+.hero-scene .hero-copy {
+  --text: #f2f7ff;
+  --muted: #c0cfdf;
+  --primary: #90bdff;
+  --border: #36536c;
+  color: var(--text);
+}
+.hero-scene .hero-copy > p { color: var(--muted); }
+.hero-scene .hero-copy > .product-kicker { background: #17354c; border-color: #385f80; color: #b3d3ff; }
+.public-site .hero-scene .hero-actions .button.primary { background: #1261d8; border-color: #3c83eb; color: #fff; }
+.public-site .hero-scene .hero-actions .button:not(.primary) { background: #142e43; border-color: #3c5972; color: #f2f7ff; }
+.hero-scene .visual-caption { color: #bfcedf; }
+.hero-scene .landing-hero { padding-top: 60px; padding-bottom: 64px; }
+.hero-scene .hero-cursor-light { background: radial-gradient(circle, #5dbce323, transparent 68%); }
+@media (max-width: 768px) {
+  .hero-scene { margin: 16px 12px 0; border-radius: 20px; }
+  .hero-scene .landing-hero { padding-top: 36px; padding-bottom: 36px; }
+}
+@media (forced-colors: active) {
+  .cinematic-field { display: none; }
+  .hero-scene { background: Canvas; }
+  .hero-scene .hero-copy { color: CanvasText; --text: CanvasText; --muted: CanvasText; --primary: LinkText; }
+}

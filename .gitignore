@@ -1,0 +1,29 @@
+# Dependencies and local tooling
+node_modules/
+.npm-cache/
+.playwright/
+.agents/
+.hyperframes/
+.thumbnails/
+
+# Generated output
+dist/
+test-results/
+playwright-report/
+*.tsbuildinfo
+*.log
+media/**/renders/
+media/**/capture/
+media/**/check-result.json
+media/**/render-help.txt
+frontend/docs/screenshots/*reference-contact.jpg
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+.DS_Store
+Thumbs.db

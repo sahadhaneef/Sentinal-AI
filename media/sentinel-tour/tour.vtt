@@ -1,0 +1,53 @@
+WEBVTT
+
+1
+00:00:00.450 --> 00:00:06.863
+Sentinel A I turns sample application errors into evidence and reviewable fixes. This walkthrough uses simulated data.
+
+2
+00:00:07.670 --> 00:00:13.179
+The Manager coordinates every handoff. Visit A I Agents to explore each role and its activity.
+
+3
+00:00:13.980 --> 00:00:20.193
+Monitoring recognizes supported errors in sample logs. Applications shows sample health and monitoring controls.
+
+4
+00:00:21.000 --> 00:00:27.169
+Diagnosis explains a likely cause with source evidence. Check the cited file, lines, and revision.
+
+5
+00:00:27.970 --> 00:00:33.119
+Repair proposes a focused change. Compare the exact diff with the original before deciding.
+
+6
+00:00:33.920 --> 00:00:40.569
+Testing checks that exact candidate. Repair and Testing shows results. Failed or missing checks block approval.
+
+7
+00:00:41.370 --> 00:00:48.453
+You approve or reject in Approval and Recovery. Applying requires separate confirmation. Verification checks the outcome.
+
+8
+00:00:49.260 --> 00:00:56.703
+Reporting records decisions, tests, and recovery outcomes, including failures and unresolved issues. No success is assumed.
+
+9
+00:00:57.510 --> 00:01:04.218
+The Dashboard summarizes application health, incident counts, and pending reviews. Open recent incidents to investigate.
+
+10
+00:01:05.020 --> 00:01:11.943
+Search and filter in Incidents. Open an issue for its overview, diagnosis, patch, tests, timeline, and report.
+
+11
+00:01:12.750 --> 00:01:18.528
+Incident History keeps closed examples easy to revisit, including rejected, resolved, and unresolved outcomes.
+
+12
+00:01:19.330 --> 00:01:26.043
+Settings controls appearance, motion, and refresh preferences. Documentation explains boundaries and links to features.
+
+13
+00:01:26.850 --> 00:01:33.493
+Start the introduction for orientation, or practice decisions in the interactive demo. No real code is executed.
