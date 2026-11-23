@@ -1,0 +1,2 @@
+# Optional local semantic encoder for Diagnosis D1; install after the core uv environment.
+fastembed==0.9.1
