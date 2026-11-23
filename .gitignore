@@ -27,3 +27,20 @@ frontend/docs/screenshots/*reference-contact.jpg
 *.pfx
 .DS_Store
 Thumbs.db
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.db
+*.sqlite
+*.sqlite3
+backend/sentinel.db
+
