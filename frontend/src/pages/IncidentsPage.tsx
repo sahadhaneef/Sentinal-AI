@@ -1,13 +1,23 @@
-import { useSearchParams } from 'react-router-dom';
-import { Search } from 'lucide-react';
+import { useSearchParams, Link } from 'react-router-dom';
+import {
+  Activity,
+  AlertTriangle,
+  ArrowRight,
+  ArrowUpRight,
+  CheckCircle2,
+  Clock3,
+  Filter,
+  Search,
+  ShieldAlert,
+  Wrench,
+} from 'lucide-react';
 import { useApplications, useIncidents } from '../hooks/queries';
 import { useDebouncedValue } from '../hooks/useDebouncedValue';
 import { runStateSchema, severitySchema, incidentSortSchema } from '../contracts/schemas';
-import { Heading, Panel, QueryState } from '../components/ui';
-import { IncidentList } from '../components/incidents';
+import { Badge, Empty, Heading, Panel, QueryState } from '../components/ui';
 import { Pagination } from '../components/Pagination';
 import { filterParams } from '../lib/pagination';
-import { label } from '../lib/format';
+import { label, time } from '../lib/format';
 
 export function IncidentsPage({ history = false }: { history?: boolean }) {
   const [params, setParams] = useSearchParams(),
@@ -18,34 +28,150 @@ export function IncidentsPage({ history = false }: { history?: boolean }) {
     severity = severitySchema.safeParse(params.get('severity'));
   const sort = incidentSortSchema.safeParse(params.get('sort'));
   const scope = history ? 'closed' : params.get('view') === 'open' ? 'open' : 'all';
+
   const query = useIncidents({
     status: status.success ? status.data : undefined,
     severity: severity.success ? severity.data : undefined,
     search: settledSearch,
     application_id: params.get('application_id') || undefined,
     cursor: params.get('cursor') || undefined,
-    limit: 5,
+    limit: 10,
     scope,
     sort: sort.success ? sort.data : 'detected_desc',
   });
+
   const update = (key: string, value: string, replace = false) =>
     setParams(filterParams(params, key, value), { replace });
+
+  const items = query.data?.data.items || [];
+
   return (
     <>
       <Heading
         title={history ? 'Incident History' : 'Incidents'}
         description={
           history
-            ? 'Decisions, verification and actual outcomes. Open a record to read its report.'
-            : 'Find the signal that needs your attention, then explore its evidence and next steps.'
+            ? 'Decisions, verification and actual outcomes. Open a record to read its post-mortem report.'
+            : 'Autonomous detection, live error logs, and investigation statuses across monitored applications.'
         }
       />
+
+      {/* Overview Metric Bar */}
+      {!history && (
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: '16px',
+            marginBottom: '24px',
+          }}
+        >
+          <div
+            style={{
+              padding: '16px',
+              background: 'var(--surface)',
+              border: '1px solid var(--border)',
+              borderRadius: '10px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+            }}
+          >
+            <div
+              style={{
+                padding: '10px',
+                borderRadius: '8px',
+                background: 'var(--tint)',
+                color: 'var(--primary)',
+              }}
+            >
+              <Activity size={20} />
+            </div>
+            <div>
+              <span style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 600 }}>
+                ACTIVE QUEUE
+              </span>
+              <h3 style={{ fontSize: '20px', marginTop: '2px' }}>
+                {query.data?.data.total ?? '—'}
+              </h3>
+            </div>
+          </div>
+
+          <div
+            style={{
+              padding: '16px',
+              background: 'var(--surface)',
+              border: '1px solid var(--border)',
+              borderRadius: '10px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+            }}
+          >
+            <div
+              style={{
+                padding: '10px',
+                borderRadius: '8px',
+                background: 'var(--tint)',
+                color: 'var(--teal)',
+              }}
+            >
+              <Wrench size={20} />
+            </div>
+            <div>
+              <span style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 600 }}>
+                CANDIDATES & TESTS
+              </span>
+              <h3 style={{ fontSize: '20px', marginTop: '2px' }}>
+                <Link to="/repair-testing" style={{ color: 'inherit' }}>
+                  Explore Queue →
+                </Link>
+              </h3>
+            </div>
+          </div>
+
+          <div
+            style={{
+              padding: '16px',
+              background: 'var(--surface)',
+              border: '1px solid var(--border)',
+              borderRadius: '10px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+            }}
+          >
+            <div
+              style={{
+                padding: '10px',
+                borderRadius: '8px',
+                background: 'var(--tint)',
+                color: 'var(--purple)',
+              }}
+            >
+              <CheckCircle2 size={20} />
+            </div>
+            <div>
+              <span style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 600 }}>
+                HUMAN APPROVALS
+              </span>
+              <h3 style={{ fontSize: '20px', marginTop: '2px' }}>
+                <Link to="/approval-recovery" style={{ color: 'inherit' }}>
+                  Review Now →
+                </Link>
+              </h3>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Filter Toolbar */}
       <div className="filters">
         <label className="search-input">
           <Search size={17} aria-hidden />
           <input
             aria-label="Search incidents"
-            placeholder="Search ID, error or description…"
+            placeholder="Search ID, error type, or description…"
             value={search}
             onChange={(e) => update('search', e.target.value, true)}
           />
@@ -57,7 +183,7 @@ export function IncidentsPage({ history = false }: { history?: boolean }) {
             onChange={(e) => update('view', e.target.value === 'open' ? 'open' : '')}
           >
             <option value="all">All incidents</option>
-            <option value="open">Open incidents</option>
+            <option value="open">Open incidents only</option>
           </select>
         )}
         <select
@@ -111,22 +237,116 @@ export function IncidentsPage({ history = false }: { history?: boolean }) {
           </button>
         )}
       </div>
+
       {applications.isError && (
         <p className="notice" role="status">
           Application names are unavailable. Incident IDs and filters remain usable.
         </p>
       )}
+
+      {/* Incident List */}
       <Panel
-        title={history ? 'Closed incident records' : 'Incident queue'}
+        title={history ? 'Closed incident records' : 'Incident Queue'}
         action={<span className="muted-caption">{query.data?.data.total ?? '—'} INCIDENTS</span>}
       >
         <QueryState query={query}>
-          <IncidentList incidents={query.data?.data.items || []} />
-          <Pagination
-            nextCursor={query.data?.data.next_cursor}
-            total={query.data?.data.total || 0}
-            busy={query.isFetching}
-          />
+          {items.length === 0 ? (
+            <Empty message="No incidents match the active filter criteria." />
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div className="incident-table-head" aria-hidden="true">
+                <span>INCIDENT & SERVICE</span>
+                <span>SEVERITY</span>
+                <span>STATUS</span>
+                <span>DETECTED</span>
+                <span>ACTIONS</span>
+              </div>
+              <ul className="incident-list">
+                {items.map((i) => {
+                  const hasCandidate = [
+                    'validating',
+                    'awaiting_approval',
+                    'approved',
+                    'applying',
+                    'verifying',
+                  ].includes(i.status);
+
+                  return (
+                    <li key={i.id}>
+                      <div
+                        className="incident-row"
+                        style={{
+                          display: 'grid',
+                          gridTemplateColumns: 'minmax(0, 2fr) 110px 140px 140px 130px',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <div>
+                          <span className="incident-id">{i.id.toUpperCase().replace('_', '–')}</span>
+                          <strong>{i.message}</strong>
+                          <small>
+                            <code>{i.error_type}</code> <span>·</span>{' '}
+                            {applications.data?.data.find((a) => a.id === i.application_id)?.name ||
+                              i.application_id}
+                          </small>
+                        </div>
+
+                        <span>
+                          <Badge value={i.severity} />
+                        </span>
+
+                        <span>
+                          <Badge value={i.status} />
+                        </span>
+
+                        <span className="incident-time">
+                          {time(i.detected_at)}
+                        </span>
+
+                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                          {hasCandidate && (
+                            <Link
+                              className="button"
+                              to={`/repair-testing?incident=${i.id}`}
+                              style={{
+                                padding: '6px 8px',
+                                fontSize: '11px',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                              }}
+                              title="Inspect tests & candidate diff"
+                            >
+                              <Wrench size={12} /> Tests
+                            </Link>
+                          )}
+                          <Link
+                            className="button"
+                            to={`/incidents/${i.id}`}
+                            style={{
+                              padding: '6px 8px',
+                              fontSize: '11px',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                            }}
+                            aria-label={`Open incident ${i.id}`}
+                          >
+                            Details <ArrowUpRight size={13} />
+                          </Link>
+                        </div>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+              <Pagination
+                nextCursor={query.data?.data.next_cursor}
+                total={query.data?.data.total || 0}
+                busy={query.isFetching}
+              />
+            </div>
+          )}
         </QueryState>
       </Panel>
     </>

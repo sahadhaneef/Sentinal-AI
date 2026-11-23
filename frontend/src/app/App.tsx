@@ -1,4 +1,4 @@
-﻿import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { lazy } from 'react';
 import { PublicShell } from '../layouts/PublicShell';
@@ -28,6 +28,15 @@ const AgentDetailPage = lazy(() =>
 );
 const IncidentDetailPage = lazy(() =>
   import('../pages/IncidentDetailPage').then((m) => ({ default: m.IncidentDetailPage })),
+);
+const RepairTestingPage = lazy(() =>
+  import('../pages/RepairTestingPage').then((m) => ({ default: m.RepairTestingPage })),
+);
+const ApprovalRecoveryPage = lazy(() =>
+  import('../pages/ApprovalRecoveryPage').then((m) => ({ default: m.ApprovalRecoveryPage })),
+);
+const IncidentHistoryPage = lazy(() =>
+  import('../pages/IncidentHistoryPage').then((m) => ({ default: m.IncidentHistoryPage })),
 );
 const WorkflowQueuePage = lazy(() =>
   import('../pages/WorkflowQueuePage').then((m) => ({ default: m.WorkflowQueuePage })),
@@ -67,10 +76,10 @@ function Content() {
             <Route path="incidents" element={<IncidentsPage />} />
             <Route path="agents" element={<AgentsPage />} />
             <Route path="agents/:type" element={<AgentDetailPage />} />
-            <Route path="history" element={<IncidentsPage history />} />
+            <Route path="history" element={<IncidentHistoryPage />} />
             <Route path="incidents/:id" element={<IncidentDetailPage />} />
-            <Route path="repair-testing" element={<WorkflowQueuePage />} />
-            <Route path="approval-recovery" element={<WorkflowQueuePage approval />} />
+            <Route path="repair-testing" element={<RepairTestingPage />} />
+            <Route path="approval-recovery" element={<ApprovalRecoveryPage />} />
             <Route path="settings" element={<SettingsPage />} />
             <Route
               path="*"

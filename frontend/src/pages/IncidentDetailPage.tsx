@@ -1,5 +1,18 @@
 import { Link, useParams, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, ArrowUpRight, Clock3, ShieldCheck } from 'lucide-react';
+import {
+  ArrowLeft,
+  ArrowRight,
+  ArrowUpRight,
+  CheckCircle2,
+  ClipboardCheck,
+  Clock3,
+  FileCode2,
+  FileText,
+  FlaskConical,
+  Layers,
+  ShieldCheck,
+  Wrench,
+} from 'lucide-react';
 import { terminalStates, useEvents, useIncident, useApplication } from '../hooks/queries';
 import { Badge, CopyButton, Empty, Heading, Panel, QueryState } from '../components/ui';
 import { useNotify } from '../components/feedback';
@@ -9,6 +22,7 @@ import { label, time } from '../lib/format';
 import { Outcome } from '../components/Outcome';
 import { Workflow } from '../components/workflow';
 import { isDemo } from '../api/client';
+
 export function IncidentDetailPage() {
   const { id = '' } = useParams(),
     [params, setParams] = useSearchParams(),
@@ -17,17 +31,45 @@ export function IncidentDetailPage() {
     application = useApplication(i?.application_id || ''),
     events = useEvents(id, !!i && !terminalStates.includes(i.status)),
     notify = useNotify();
+
   const tabs = ['overview', 'diagnosis', 'patch & tests', 'timeline', 'report'];
   const selected = params.get('tab') || 'overview';
+
+  const hasCandidate = !!(i?.patches && i.patches.length > 0);
+  const isValidated = i?.validation?.status === 'passed';
+
   return (
     <>
-      <Link to="/incidents" className="text-link back-link">
-        <ArrowLeft size={14} /> All incidents
-      </Link>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
+        <Link to="/incidents" className="text-link back-link" style={{ marginBottom: 0 }}>
+          <ArrowLeft size={14} /> Back to all incidents
+        </Link>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          {hasCandidate && (
+            <Link
+              className="button"
+              to={`/repair-testing?incident=${id}`}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}
+            >
+              <Wrench size={14} /> Repair & Testing <ArrowUpRight size={13} />
+            </Link>
+          )}
+          {hasCandidate && (
+            <Link
+              className="button primary"
+              to={`/approval-recovery?incident=${id}`}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px' }}
+            >
+              <ClipboardCheck size={14} /> Approval & Recovery <ArrowRight size={13} />
+            </Link>
+          )}
+        </div>
+      </div>
+
       <Heading
         eyebrow={id.toUpperCase().replace('_', '–')}
         title={i?.message || 'Incident details'}
-        description="Evidence, decisions and outcomes — connected in one reviewable record."
+        description="Autonomous evidence, AI root-cause diagnosis, isolated candidate tests, and developer decisions."
         action={
           i && (
             <span role="status" aria-label="Incident status">
@@ -36,6 +78,7 @@ export function IncidentDetailPage() {
           )
         }
       />
+
       <QueryState query={q}>
         {i && (
           <>
@@ -49,7 +92,9 @@ export function IncidentDetailPage() {
               </span>
               <code>rev {i.repository_revision}</code>
             </div>
+
             <Workflow state={i.status} />
+
             <nav className="tabs" aria-label="Incident sections">
               {tabs.map((tab) => (
                 <button
@@ -62,60 +107,84 @@ export function IncidentDetailPage() {
                 </button>
               ))}
             </nav>
+
             <div className="page-enter" key={selected}>
               {selected === 'overview' && (
                 <>
                   <div className="detail-grid">
-                    <Panel title="Incident summary">
+                    <Panel title="Incident Summary">
                       <dl className="key-values">
                         <div>
                           <dt>Error type</dt>
-                          <dd>{i.error_type}</dd>
+                          <dd>
+                            <code>{i.error_type}</code>
+                          </dd>
                         </div>
                         <div>
                           <dt>Current stage</dt>
                           <dd>{label(i.current_stage)}</dd>
                         </div>
                         <div>
-                          <dt>Run</dt>
+                          <dt>Active run</dt>
                           <dd>{i.active_run_id || 'No active run'}</dd>
                         </div>
                         <div>
-                          <dt>Repository revision</dt>
+                          <dt>Base revision</dt>
                           <dd>
                             <code>{i.repository_revision}</code>
                           </dd>
                         </div>
+                        <div>
+                          <dt>Candidate patches</dt>
+                          <dd>{i.patches.length} candidate(s) formulated</dd>
+                        </div>
                       </dl>
+
                       <p className="notice">
                         {i.permission_reason ||
                           (isDemo
-                            ? 'This incident is linked to an exact source revision and candidate. All evidence in this workspace is simulated.'
-                            : 'Review evidence at the recorded repository revision. The backend independently enforces approval and apply permissions.')}
+                            ? 'Simulated evidence for local demonstration. Real changes require developer confirmation.'
+                            : 'Review evidence at the recorded repository revision. Permissions independently enforced.')}
                       </p>
-                      <Link className="text-link" to={`/incidents/${id}?tab=diagnosis`}>
-                        Inspect diagnosis <ArrowUpRight size={14} />
-                      </Link>
+
+                      <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
+                        <Link className="text-link" to={`/incidents/${id}?tab=diagnosis`}>
+                          Inspect diagnosis <ArrowUpRight size={14} />
+                        </Link>
+                        {hasCandidate && (
+                          <Link className="text-link" to={`/repair-testing?incident=${id}`}>
+                            Open Repair & Testing <ArrowUpRight size={14} />
+                          </Link>
+                        )}
+                      </div>
                     </Panel>
+
                     <Panel
-                      title="Source log (redacted)"
+                      title="Source Error Log & Stack Trace"
                       action={<CopyButton value={i.source_log} notify={notify} />}
                     >
-                      <pre className="code-block">{i.source_log}</pre>
-                      <p className="spaced">
-                        Source event {i.source_event_id}. Unsupported patterns require manual
-                        review.
+                      <pre
+                        className="code-block"
+                        style={{ maxHeight: '260px', overflowY: 'auto' }}
+                      >
+                        {i.source_log}
+                      </pre>
+                      <p className="spaced" style={{ fontSize: '11px', color: 'var(--muted)' }}>
+                        Source event ID: <code>{i.source_event_id}</code>. Monitored service: <strong>{application.data?.data.name || i.application_id}</strong>.
                       </p>
                     </Panel>
                   </div>
+
                   <div className="spaced">
                     <ReviewActions key={i.id} incident={i} />
                   </div>
+
                   <div className="spaced">
                     <Outcome incident={i} />
                   </div>
                 </>
               )}
+
               {selected === 'diagnosis' &&
                 (i.diagnosis ? (
                   <Panel
@@ -124,7 +193,7 @@ export function IncidentDetailPage() {
                   >
                     <h3>{i.diagnosis.hypothesis}</h3>
                     <p className="spaced">
-                      Confidence: {i.diagnosis.confidence_label}. {i.diagnosis.uncertainty}
+                      Confidence: <strong>{i.diagnosis.confidence_label}</strong>. {i.diagnosis.uncertainty}
                     </p>
                     <p className="notice">Suggested direction: {i.diagnosis.suggested_direction}</p>
                     {i.diagnosis.evidence.map((e) => (
@@ -139,28 +208,43 @@ export function IncidentDetailPage() {
                         <small>Evidence artifact {e.artifact_id}</small>
                       </div>
                     ))}
-                    <Link className="button spaced" to={`/incidents/${id}?tab=patch%20%26%20tests`}>
-                      Review patch & tests <ArrowUpRight size={15} />
-                    </Link>
+                    <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
+                      <Link className="button" to={`/incidents/${id}?tab=patch%20%26%20tests`}>
+                        Review patch & tests <ArrowUpRight size={15} />
+                      </Link>
+                      <Link className="button primary" to={`/repair-testing?incident=${id}`}>
+                        Open in Repair & Testing <ArrowRight size={15} />
+                      </Link>
+                    </div>
                   </Panel>
                 ) : (
                   <Panel>
-                    <Empty message="Needs manual review. No supported diagnosis." />
+                    <Empty message="Needs manual review. No supported diagnosis available for this incident." />
                   </Panel>
                 ))}
+
               {selected === 'patch & tests' &&
                 (i.patches.length ? (
                   <>
                     <PatchReview patch={i.patches.at(-1)!} validation={i.validation} />
+                    <div style={{ display: 'flex', gap: '12px', marginTop: '16px', marginBottom: '16px' }}>
+                      <Link className="button primary" to={`/repair-testing?incident=${id}`}>
+                        Detailed Testing Console <ArrowUpRight size={14} />
+                      </Link>
+                      <Link className="button" to={`/approval-recovery?incident=${id}`}>
+                        Approval & Recovery <ArrowRight size={14} />
+                      </Link>
+                    </div>
                     <div className="spaced">
                       <ReviewActions incident={i} />
                     </div>
                   </>
                 ) : (
                   <Panel>
-                    <Empty message="No patch candidate available." />
+                    <Empty message="No patch candidate available for this incident yet." />
                   </Panel>
                 ))}
+
               {selected === 'timeline' && (
                 <Panel title="Incident audit timeline">
                   <QueryState query={events}>
@@ -183,7 +267,9 @@ export function IncidentDetailPage() {
                   </QueryState>
                 </Panel>
               )}
-              {selected === 'report' && <Outcome incident={i} />}{' '}
+
+              {selected === 'report' && <Outcome incident={i} />}
+
               {!tabs.includes(selected) && (
                 <Empty message="Unknown incident section. Choose a section above." />
               )}
