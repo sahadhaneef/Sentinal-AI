@@ -1,5 +1,7 @@
 # SENTINEL AI — Backend Architecture & API Contract
 
+Implementation update: Phases 0-3 provide the inspected contract, database foundation and database-backed REST reads with operator intake under `backend/`. See `backend/docs/PHASE_3_API.md` for the implemented endpoint and local-access policy. User/session authorization, six agents, workflow mutations and patch execution remain planned. The blueprint below describes the intended complete system, not delivered execution capabilities.
+
 > Status: implementation blueprint, NOT an implemented backend. Scope: functional local prototype, one designated sample application, six logical agents. Frontend is built first. This document is the contract that the future backend must honor.
 
 ## 1. Purpose and non-goals

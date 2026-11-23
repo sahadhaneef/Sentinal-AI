@@ -1,0 +1,11 @@
+---
+description: Existing Diagno-Agent branch and preservation rules for Diagnosis Agent and Code RAG work
+alwaysApply: true
+---
+
+For Diagnosis Agent and Code RAG development, follow the repository-level
+`AGENTS.md`. Work only on `Diagno-Agent`, preserve unpublished Phase 3 work,
+verify the branch before each commit/push, and push only to `origin Diagno-Agent`.
+Keep unrelated changes out of staged commits. Never modify `main`, force-push,
+merge or open a PR without the required explicit authorization.
+Preserve and follow `backend/AGENTS.md`; these branch rules do not replace it.

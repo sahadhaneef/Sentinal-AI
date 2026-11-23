@@ -1,0 +1,12 @@
+{
+  "schema_version": "1.0",
+  "note": "Phase 0 integration baseline. Update only with a documented, coordinated contract decision.",
+  "files": {
+    "frontend/src/contracts/schemas.ts": "40bb0dd6ff90352692b7bb796b4751f3787e7e124dea52f1e678750e81c85429",
+    "frontend/src/contracts/types.ts": "ce2200c46fd29d67512adca067bf04da10454c9447f17870bb2da7261696d909",
+    "frontend/src/api/interfaces.ts": "379170f43864bb9055227b10a3131115d417600f80e16fcaf579eb71368ee91a",
+    "frontend/src/api/realAdapter.ts": "caa1d2007c87da050e7d6443b99c7e8ac955ca52051c97546d9eb8b5ffd2e34c",
+    "frontend/docs/ADR-001-frontend-wire-projections.md": "a92066a357c74d147dd2bb0cee10b517d448335737ec2bdba250b440ce64737f",
+    "frontend/docs/ADR-002-audit-contract-clarifications.md": "faeb5890d501c8388a93f5302a07d7fd7b69eace2aed05dd4d887b85a1c4439c"
+  }
+}

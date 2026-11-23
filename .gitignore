@@ -3,6 +3,16 @@ node_modules/
 .npm-cache/
 .playwright/
 .agents/
+.tools/
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+backend/artifacts/*
+!backend/artifacts/.gitkeep
+backend/demo_workspaces/
 .hyperframes/
 .thumbnails/
 

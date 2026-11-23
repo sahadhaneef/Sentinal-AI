@@ -1,0 +1,10 @@
+---
+description: Mandatory SENTINEL AI backend Python coding standards and acceptance checks
+globs: backend/**/*.py,backend/pyproject.toml
+alwaysApply: false
+---
+
+Follow `backend/AGENTS.md` for all backend Python development, generated code,
+migrations, tests and refactors. These standards apply automatically to all
+remaining phases. Preserve the existing Ruff configuration and require actual
+passing lint, format and test results before declaring a backend phase complete.
