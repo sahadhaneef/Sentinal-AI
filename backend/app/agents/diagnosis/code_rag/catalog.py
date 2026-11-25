@@ -5,6 +5,8 @@ from pathlib import Path
 from sqlalchemy import Engine, select
 from sqlalchemy.engine import make_url
 
+from app.agents.diagnosis.execution.control import ExecutionControl
+from app.agents.diagnosis.repositories import RegisteredRevision
 from app.core.config import Settings
 from app.db.types import validate_token
 from app.models import Application, ApplicationRevision, Incident, RepositoryRevision, WorkflowRun
@@ -19,10 +21,18 @@ from .ingestion import reject_redirects
 class SourceCatalog:
     """No caller-supplied filesystem paths; revisions must already be registered."""
 
-    def __init__(self, engine: Engine, settings: Settings, rag: RagSettings) -> None:
+    def __init__(
+        self,
+        engine: Engine,
+        settings: Settings,
+        rag: RagSettings,
+        control: ExecutionControl | None = None,
+    ) -> None:
         self.engine, self.settings, self.rag = engine, settings, rag
+        self.control = control or ExecutionControl()
 
-    def revision(self, application_id: str, revision: str) -> RepositoryRevision:
+    def revision(self, application_id: str, revision: str) -> RegisteredRevision:
+        self.control.checkpoint("before_revision")
         validate_token(application_id)
         validate_token(revision)
         with transaction(self.engine) as store:
@@ -37,7 +47,9 @@ class SourceCatalog:
                 raise SourceRejected(
                     "REVISION_UNAVAILABLE", "The source revision is not registered."
                 )
-            return record
+            return RegisteredRevision(
+                record.id, record.application_id, record.revision, record.snapshot_artifact_id
+            )
 
     def bind(self, application_id: str, revision: str) -> BoundSource:
         """Bind only the current operator-permitted revision and reject write overlap."""

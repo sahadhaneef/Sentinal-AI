@@ -2,8 +2,10 @@
 
 Prepared 2026-11-24. Diagnosis branch: `Diagno-Agent`; inspected Manager commit:
 `b74f09aad6c649a44d3efbfdc301c65e5a3b0631`. Scope: D4A adapter preparation.
-**No shared decisions below have been confirmed by Delvin. Do not register the
-agent or merge branches on the basis of this document.** Full evidence and gate
+Updated 2026-11-25 for D4B. The user's D4B request relays Delvin's agreement in
+principle on ownership, isolation, deadlines, cancellation and retry policies.
+**Concrete repository field mappings, canonical schema and migrations are not
+approved. Do not register the agent or merge branches on this basis.** Full evidence and gate
 details: [D4 integration plan](DIAGNOSIS_D4_INTEGRATION_PLAN.md).
 
 ## Observed contracts (implemented compatibility, not team approval)
@@ -65,17 +67,17 @@ confidence is low/medium/high. Incident/run IDs remain in the input context.
 Internal facts, hypothesis evidence IDs, quality reasons and retrieval provenance
 are retained in `QualityResult`, not added to the public data projection.
 
-## Ownership and architecture proposal — all pending
+## Ownership direction agreed in principle; concrete mappings pending
 
 | Topic | Observed difference | Proposed agreement / required owner decision |
 | --- | --- | --- |
 | Revision custody | Manager defaults can be HEAD; Diagnosis requires registered sealed source | Delvin captures and binds exact application/run/revision/snapshot; Sahad verifies scope and source hashes. Agree how Git identity is attested |
 | Logs | Inline Manager source_log versus linked events/artifacts in Diagnosis | Agree one selected event/log, sanitization owner, size policy and inline/artifact precedence. Diagnosis redaction/control checks are additional defenses, not the complete sanitization contract |
-| Result persistence | Manager inserts Diagnosis/AgentExecution and transitions; Diagnosis defaults read-only | Manager owns final transaction and idempotency. Keep optional OutcomeRecorder disabled; agree where metadata-only provenance is retained |
+| Result persistence | Manager inserts Diagnosis/AgentExecution and transitions; Diagnosis defaults read-only | Manager ownership agreed in principle. Keep optional OutcomeRecorder disabled; agree canonical record mappings, idempotency and provenance retention |
 | Evidence custody | Manager stores evidence_json and can synthesize missing IDs/excerpts | Preserve actual artifact identity and hashes; Delvin removes fallback placeholders for real outputs and defines artifact access/retention |
 | Database/session | Manager AsyncSession/incident_runs; Diagnosis Engine/Store/workflow_runs, normalized revisions/evidence | Choose one canonical model/repository boundary. No mirrored operational database, copied incident rows, cross-thread AsyncSession or competing migrations |
-| Timeout/cancellation | Manager wait_for default120 seconds; synchronous Diagnosis HTTP timeout default30 seconds | Agree bounded worker/async transport and overall deadline. Cooperative seam propagates cancellation but does not preempt native work. Manager rechecks active invocation before accepting output |
-| Retries | Adapter has none; LLM_UNAVAILABLE covers permanent and transient conditions | Agree retry taxonomy, budget/backoff, attempt IDs and duplicate-result policy. Do not retry every LLM_UNAVAILABLE or create new workflow runs |
+| Timeout/cancellation | Manager wait_for default120 seconds; synchronous Diagnosis HTTP timeout default 30 seconds | Overall120 seconds and Manager deadline authority agreed in principle. D4B implements bounded spawn workers, cooperative checkpoints and termination; final active-invocation rejection remains Manager-owned |
+| Retries | Adapter has none; LLM_UNAVAILABLE covers permanent and transient conditions | Manager owns at most one retry, only explicitly transient and within the same stage deadline. D4B returns internal classification; public error-envelope mapping, backoff and attempt identity remain pending |
 
 No transaction should remain open across inference. Matching table names do not
 make these branches' schemas compatible. D1's private vector cache is derived
@@ -144,9 +146,10 @@ AgentOutput instance. Do not introduce an unbounded thread wrapper as a shortcut
 
 ## Delvin actions and runtime acceptance
 
-1. Confirm all six gates: revision, logs, persistence, cancellation, status/retry
-   semantics and canonical storage/session architecture. Record approver and date;
-   none are approved here.
+1. Finalize remaining revision/log rules, canonical schema and field mappings,
+   provenance sink, concrete cancellation/attempt persistence and status/error
+   mappings. D4B records the ownership direction relayed by the user; it does not
+   infer approval of these remaining implementation contracts.
 2. Agree shared-context repository integration, artifact access and provenance
    retention; remove placeholder evidence fallbacks for actual Diagnosis outputs.
 3. Specify invocation/attempt identity, bounded retries and final active-run,
@@ -163,3 +166,38 @@ D4A provides 30 compatibility tests within the backend regression suite. D4C
 runtime integration is blocked on the decisions above. D5 model setup/evaluation
 can proceed independently after operator-approved local installation/download;
 live inference remains unverified.
+
+## D4B implementation boundary
+
+See `DIAGNOSIS_D4B_VERIFICATION.md`. Typed read interfaces now cover atomic
+incident/run/log context, registered revisions, snapshot/citation resolution and
+persistent code-index access. Existing standalone repositories implement them;
+Manager-backed implementations await the canonical schema contract.
+
+`IsolatedDiagnosisWorker` is an unregistered Diagnosis-owned controller: use one
+instance per event loop/lifespan and close it with `aclose()` or async context
+management. `diagnose_from_manager(payload, worker, deadline=absolute_monotonic)`
+preserves the D4A input mapper and returns an internal `WorkerOutcome`, including
+full `QualityResult` metadata and an optional `ExecutionFailure`. No HTTP route or
+registry hook is added. The same absolute deadline must be reused for Manager's
+single eligible retry; passing a fresh deadline would violate Manager's contract.
+
+For a returned quality result, `to_manager(outcome.quality, duration_ms)` remains
+the existing public projection. Persist rich hypotheses/facts, source hashes,
+provider/fallback metadata, query/embedding provenance and quality reasons via an
+agreed Manager-owned sink before discarding internal metadata. The seven-field
+public evidence projection is insufficient to retain all provenance by itself.
+
+For failures, Manager must inspect `outcome.failure.kind` and its derived
+`retry_eligible` property before deciding its one bounded retry. Only transient
+provider HTTP errors, temporary network failures and provider timeouts qualify;
+unknown failures, configuration, revisions, artifacts, citations and insufficient
+or conflicting evidence do not. Existing quality failures still map through
+`to_manager` (for example LLM_UNAVAILABLE); new process-only failures require an
+agreed safe AgentOutput.error string mapping. No new fields are inserted into the
+existing AgentOutput, DiagnosisRequest 1.0 or DiagnosisResult contracts.
+
+Cancellation propagates as asyncio.CancelledError after test-owned worker reaping.
+The controller may forcibly terminate uncooperative native work; this does not
+cancel inference already running inside the Ollama server. Manager still owns
+final deadline/cancellation/attempt checks, persistence and state transitions.

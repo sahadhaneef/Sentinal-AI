@@ -5,6 +5,12 @@ from collections.abc import Sequence
 
 from sqlalchemy import Engine
 
+from app.agents.diagnosis.execution.control import ExecutionControl
+from app.agents.diagnosis.repositories import (
+    IndexedSnapshot,
+    RetrievalRepositories,
+    StandaloneIndexReader,
+)
 from app.core.config import Settings
 from app.core.errors import ApiError
 from app.core.logging import redact
@@ -34,16 +40,26 @@ class CodeRag:
         settings: Settings,
         rag: RagSettings | None = None,
         provider: EmbeddingProvider | None = None,
+        *,
+        repositories: RetrievalRepositories | None = None,
+        control: ExecutionControl | None = None,
     ) -> None:
+        self.engine, self.settings = engine, settings
+        self.control = control or ExecutionControl()
         self.rag = rag or RagSettings()
         self.provider = provider or LocalSemanticProvider(
             self.rag.model_root, self.rag.embedding_batch_size, self.rag.embedding_threads
         )
-        self.catalog = SourceCatalog(engine, settings, self.rag)
+        self.catalog = SourceCatalog(engine, settings, self.rag, self.control)
         self.ingestion = SourceIngestion(self.rag)
         self.chunker = CodeChunker(self.rag)
         self.cache = VectorCache(self.rag.index_root)
         self.evidence = EvidenceStore(engine, settings)
+        self.repositories = repositories or RetrievalRepositories(
+            self.catalog, self.evidence, StandaloneIndexReader(self.cache)
+        )
+        self.catalog = self.repositories.source
+        self.evidence = self.repositories.evidence
         self.chunk_profile = identity(
             "chunk-profile",
             CHUNKER_VERSION,
@@ -153,8 +169,10 @@ class CodeRag:
     def retrieve(self, request: RetrievalRequest) -> RetrievalResult:
         """Return verified evidence or explicit empty/unavailable status, never a diagnosis."""
         try:
+            self.control.checkpoint("before_revision")
             self.catalog.context(request)
-            collection = self.cache.collection(
+            self.control.checkpoint("before_index")
+            collection = self.repositories.index.collection(
                 self._collection_key(request.application_id, request.repository_revision)
             )
             if collection is None:
@@ -189,7 +207,7 @@ class CodeRag:
                 evidence=[],
             )
 
-    def _retrieve(self, request: RetrievalRequest, collection: Collection) -> RetrievalResult:
+    def _retrieve(self, request: RetrievalRequest, collection: IndexedSnapshot) -> RetrievalResult:
         trace = redact(request.stack_trace)
         if request.stack_trace_ref:
             trace += "\n" + self.evidence.stack_log(
@@ -198,6 +216,7 @@ class CodeRag:
         verified = []
         corrupt = False
         for member in collection.members:
+            self.control.checkpoint("retrieval_member")
             try:
                 item = self.evidence.resolve(
                     request.application_id,
@@ -224,13 +243,16 @@ class CodeRag:
         reason = "OK"
         if verified:
             try:
+                self.control.checkpoint("before_embedding")
                 query_vector = validate_vectors(
                     [self.provider.query(query)], 1, self.provider.dimensions
                 )[0]
-                vectors = self.cache.vectors(
+                self.control.checkpoint("after_embedding")
+                vectors = self.repositories.index.vectors(
                     [member["vector_key"] for member, _ in verified], self.provider.dimensions
                 )
                 for key, vector in vectors.items():
+                    self.control.checkpoint("retrieval_vector")
                     normalized = validate_vectors([vector], 1, self.provider.dimensions)[0]
                     scores[key] = max(
                         -1.0,
@@ -245,6 +267,7 @@ class CodeRag:
                 reason = "EMBEDDINGS_UNAVAILABLE"
         results = []
         for member, item in verified:
+            self.control.checkpoint("retrieval_rank")
             tier = exact_tier(
                 item["file_path"], item["symbol"], item["start_line"], item["end_line"], frames
             )

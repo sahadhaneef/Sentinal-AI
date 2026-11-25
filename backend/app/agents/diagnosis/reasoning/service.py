@@ -1,6 +1,7 @@
 """Evidence-bound Diagnosis reasoning with explicit uncertainty and no workflow writes."""
 
 import logging
+from collections.abc import Callable
 
 from pydantic import ValidationError
 from sqlalchemy import Engine
@@ -8,6 +9,9 @@ from sqlalchemy import Engine
 from app.agents.diagnosis.code_rag.contracts import RetrievalRequest, RetrievedEvidence
 from app.agents.diagnosis.code_rag.errors import RagError
 from app.agents.diagnosis.code_rag.service import CodeRag
+from app.agents.diagnosis.execution.control import ExecutionControl
+from app.agents.diagnosis.execution.errors import ExecutionFailure, FailureKind
+from app.agents.diagnosis.repositories import ContextReader
 from app.core.config import Settings
 from app.core.errors import ApiError
 from app.core.logging import redact
@@ -22,7 +26,7 @@ from .contracts import (
     ReasoningContext,
     ReasoningDraft,
 )
-from .providers import DisabledProvider, OllamaProvider, ReasoningProvider
+from .providers import DisabledProvider, OllamaProvider, ReasoningProvider, ReasoningUnavailable
 from .repository import ContextRejected, DiagnosisContextRepository
 
 LOGGER = logging.getLogger("sentinel.diagnosis")
@@ -42,22 +46,33 @@ class DiagnosisService:
         config: DiagnosisSettings | None = None,
         provider: ReasoningProvider | None = None,
         test_fallback: ReasoningProvider | None = None,
+        *,
+        context_repository: ContextReader | None = None,
+        control: ExecutionControl | None = None,
+        failure_observer: Callable[[ExecutionFailure], None] | None = None,
     ) -> None:
+        self.control = control or rag.control
+        if self.control is not rag.control:
+            raise ValueError("Share one ExecutionControl across retrieval and reasoning")
+        self.failure_observer = failure_observer
         self.config = config or DiagnosisSettings()
         if test_fallback is not None and (
             settings.environment != "test" or not self.config.allow_test_fallback
         ):
             raise ValueError("Deterministic fallback requires explicit test environment and opt-in")
         self.provider = provider or (
-            OllamaProvider(self.config) if self.config.provider == "ollama" else DisabledProvider()
+            OllamaProvider(self.config, self.control)
+            if self.config.provider == "ollama"
+            else DisabledProvider()
         )
         self.test_fallback = test_fallback
         self.rag = rag
-        self.context = DiagnosisContextRepository(engine, settings)
+        self.context = context_repository or DiagnosisContextRepository(engine, settings)
 
     def diagnose(self, request: DiagnosisRequest) -> DiagnosisResult:
         """Validate context, retrieve, reason, and reverify citations before returning findings."""
         request = DiagnosisRequest.model_validate(request.model_dump())
+        self.control.checkpoint("before_context")
         try:
             context = self.context.load(request)
         except ContextRejected as error:
@@ -69,6 +84,7 @@ class DiagnosisService:
 
         if context.stack_trace.strip() and not hints(context.stack_trace):
             return self._review(request, "MALFORMED_LOG")
+        self.control.checkpoint("before_retrieval")
         retrieval = self.rag.retrieve(
             RetrievalRequest(
                 application_id=request.application_id,
@@ -98,8 +114,18 @@ class DiagnosisService:
         used_fallback = False
         provider = self.provider
         try:
+            self.control.checkpoint("before_llm")
             raw = provider.reason(reasoning.model_copy(deep=True))
-        except Exception:
+            self.control.checkpoint("after_llm")
+        except Exception as error:
+            if self.failure_observer is not None:
+                self.failure_observer(
+                    ExecutionFailure(
+                        kind=error.kind
+                        if isinstance(error, ReasoningUnavailable)
+                        else FailureKind.PROVIDER_UNKNOWN
+                    )
+                )
             if self.test_fallback is None:
                 return self._review(request, "LLM_UNAVAILABLE")
             provider, used_fallback = self.test_fallback, True
@@ -156,12 +182,15 @@ class DiagnosisService:
             else None,
         )
         LOGGER.info("Diagnosis reasoning returned", extra={"status": result.status})
+        self.control.checkpoint("before_return")
         return result
 
     def _verify(self, request: DiagnosisRequest, evidence: list[RetrievedEvidence]) -> None:
+        self.control.checkpoint("before_evidence_validation")
         if len({item.evidence_id for item in evidence}) != len(evidence):
             raise ValueError("Duplicate citation identity")
         for item in evidence:
+            self.control.checkpoint("evidence_validation")
             resolved = self.rag.evidence.resolve(
                 request.application_id,
                 request.repository_revision,
@@ -243,6 +272,7 @@ class DiagnosisService:
         insufficient: bool = False,
         evidence: list[RetrievedEvidence] | None = None,
     ) -> DiagnosisResult:
+        self.control.checkpoint("before_review_return")
         return DiagnosisResult(
             incident_id=request.incident_id,
             run_id=request.run_id,

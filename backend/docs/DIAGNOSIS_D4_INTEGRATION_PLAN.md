@@ -5,6 +5,14 @@ Prepared 2026-11-24 on `Diagno-Agent`. Status: ready for joint contract review;
 does not implement Manager orchestration, Repair, Testing, database migrations,
 or a second operational database.
 
+Current update (2026-11-25): the D4B request relays Delvin's agreement in principle
+on Manager-owned async persistence/workflows/retries/cancellation, Diagnosis-owned
+retrieval/evidence/reasoning, isolated workers, an overall 120-second stage budget,
+default 30-second LLM timeout and at most one Manager-owned transient retry within
+that budget. Schema, migration strategy and concrete repository mappings remain
+pending joint approval. Earlier all-pending statements below are the D4A review
+history; see the D4B section and verification report for the current boundary.
+
 ## Verified baseline and inspection
 
 D3 is committed as `e2600aa6a267a4415cdbb449921096640df6f4b5`, with the requested
@@ -76,17 +84,18 @@ makes the two ORM/session layouts compatible. Manager's alias support for
 root_cause/suggested_fix/affected_files is unnecessary: Diagnosis keeps the
 existing hypothesis/suggested_direction/evidence names.
 
-## Six approval gates
+## Six approval gates (D4A review snapshot)
 
-All gates remain **pending agreement**; recommendations below are not decisions
-made on Delvin's behalf.
+At D4A review all gates were **pending agreement**. The D4B direction above
+supersedes ownership/deadline/retry proposals, but does not approve concrete
+database fields or migrations. Recommendations below retain their review history.
 
 | Gate | Observed incompatibility | Proposed decision and owners | Acceptance evidence before registration |
 | --- | --- | --- | --- |
 | 1. Revision custody | Manager Application/Incident default to HEAD and pass the incident revision; D1 requires a registered immutable revision/manifest, but opaque revision tokens are not Git attestation | Delvin owns capture/registration and source access policy; Sahad consumes the exact binding. Resolve moving refs before a run and bind an immutable snapshot plus digest to the run | Wrong revision, changed/deleted source and late worktree edits cannot change existing citations or start reasoning under a different revision |
 | 2. Logs | Manager stores inline Incident.source_log; Diagnosis reads incident-linked redacted artifacts or explicit inline traces. Its current fallback selects a bounded deterministic linked log, not an agreed production selector | Delvin and Sahad agree on one event/log reference, sanitization owner, maximum size and fallback rules. Prefer an explicit incident-linked redacted artifact ID plus hash; do not assume CORS or a redacted flag proves content is safe | Foreign-incident refs, conflicting inline/artifact content, credentials, malformed/oversized logs and multiple linked events yield deterministic review outcomes |
 | 3. Persistence | Manager creates Diagnosis, AgentExecution and transitions. Diagnosis defaults read-only; its optional recorder writes this branch's AuditEvent, whereas Manager uses IncidentEvent | Manager is the sole owner of final diagnosis/execution/workflow commits. Agree on an audit/provenance sink; leave OutcomeRecorder disabled in the integrated worker until then | One invocation yields one accepted result/execution; failures roll back; review evidence/provenance survives restart without duplicate records |
-| 4. Cancellation/timeouts | Manager wraps execute with wait_for, default120 seconds; Diagnosis is synchronous with a default30-second HTTP socket timeout and no retry | Delvin owns the overall monotonic deadline and cancellation token; Sahad honors the remaining budget. Choose a bounded worker or compatible async transport. Do not run blocking inference on the event loop or pass an AsyncSession across threads | Cancellation during retrieval/inference cannot persist a late result or advance the workflow; worker resources remain bounded; network timeout is distinguished from invalid evidence |
+| 4. Cancellation/timeouts | Manager wraps execute with wait_for, default120 seconds; Diagnosis is synchronous with a default 30-second HTTP socket timeout and no retry | Delvin owns the overall monotonic deadline and cancellation token; Sahad honors the remaining budget. Choose a bounded worker or compatible async transport. Do not run blocking inference on the event loop or pass an AsyncSession across threads | Cancellation during retrieval/inference cannot persist a late result or advance the workflow; worker resources remain bounded; network timeout is distinguished from invalid evidence |
 | 5. Status/error semantics | Manager treats success=false as an execution error and manual review; success=true/manual_review persists a review diagnosis. Its normal path records execution completed even for review | Agree on the code-to-outcome matrix below, retry eligibility and execution status semantics without adding workflow states silently | Completed, insufficient evidence, contradiction, model-requested review, provider outage, malformed response, invalid context and cancellation each have asserted state transitions |
 | 6. Database/session approach | Manager uses AsyncSession, incident_runs, inline source_log, evidence_json and CodeIndexEntry.index_ref. Diagnosis uses Engine/Store, workflow_runs, registered revisions, artifact_id/index_metadata and normalized evidence references | Choose one canonical shared operational database/model set jointly. Recommended first step is small repository interfaces over the agreed model, not copying incident/run rows into another database. Any required additive migration is a separately reviewed shared change | Context, revisions and artifact citations resolve from the same authoritative records; existing data and API behavior survive an upgrade without resets or shadow copies |
 
@@ -332,3 +341,25 @@ and the live-only evaluator exited 2 with CONFIGURE_LOCAL_OLLAMA_MODEL. No model
 download, live inference, Manager registration or cross-branch integration is
 claimed. D4C remains blocked on team decisions; D5 live execution awaits setup
 and explicit approval for any model download.
+
+## D4B implementation — 2026-11-25
+
+Implemented only the Diagnosis side of the direction supplied in the D4B request.
+Read ports and standalone adapters preserve the persistent Code RAG index; a
+spawn-per-invocation worker executes blocking native work outside the event loop,
+with bounded concurrency/queue, checkpoints, deadline supervision, forced-stop
+fallback and full typed results. Classification is internal and no retries are
+performed by Diagnosis. Operational database access in the standalone worker is
+query-only; optional audit recording is disabled.
+
+Manager's latest inspected commit is still
+`b74f09aad6c649a44d3efbfdc301c65e5a3b0631`. Its initial Alembic revision is empty,
+and its next revision creates idempotency_records; this is not equivalent to this
+branch's explicit 0002_domain migration. Do not run or stamp either migration
+history onto the other's operational database. No shared migration changed.
+
+The exact model differences, smallest proposed canonical-database reconciliation,
+interfaces, execution trade-offs, actual checks and remaining acceptance work are
+in `DIAGNOSIS_D4B_VERIFICATION.md`. Manager code remains read-only and unregistered.
+D4B is local and must undergo explicit review before any commit/push. The separate
+D5 readiness report is preserved byte-for-byte and is not bundled into this work.
