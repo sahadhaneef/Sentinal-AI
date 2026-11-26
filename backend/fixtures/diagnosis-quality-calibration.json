@@ -1,0 +1,68 @@
+[
+  {
+    "case_id": "cal_unknown_origin",
+    "file_path": "cal_unknown_origin.py",
+    "source": "def average(total, samples):\n    return total / samples\n",
+    "error_type": "ZeroDivisionError",
+    "message": "division by zero",
+    "trace": "File \"cal_unknown_origin.py\", line 2, in average\nZeroDivisionError: division by zero",
+    "expected_status": "completed",
+    "expected_file": "cal_unknown_origin.py",
+    "hypothesis_terms": []
+  },
+  {
+    "case_id": "cal_upstream",
+    "file_path": "cal_upstream.py",
+    "source": "def ratio(total):\n    sample_count = 0\n    return total / sample_count\n",
+    "error_type": "ZeroDivisionError",
+    "message": "division by zero",
+    "trace": "File \"cal_upstream.py\", line 3, in ratio\nZeroDivisionError: division by zero",
+    "expected_status": "completed",
+    "expected_file": "cal_upstream.py",
+    "hypothesis_terms": []
+  },
+  {
+    "case_id": "cal_unknown_operand",
+    "file_path": "cal_unknown_operand.py",
+    "source": "def utilization(used, values, key):\n    return used / values[key]\n",
+    "error_type": "ZeroDivisionError",
+    "message": "division by zero",
+    "trace": "File \"cal_unknown_operand.py\", line 2, in utilization\nZeroDivisionError: division by zero",
+    "expected_status": "manual_review",
+    "expected_file": "cal_unknown_operand.py",
+    "hypothesis_terms": []
+  },
+  {
+    "case_id": "cal_misleading",
+    "file_path": "cal_misleading.py",
+    "source": "def allocate(total, groups):\n    return total - groups\n    return total // groups\n",
+    "error_type": "ZeroDivisionError",
+    "message": "integer division or modulo by zero",
+    "trace": "File \"cal_misleading.py\", line 2, in allocate\nZeroDivisionError: integer division or modulo by zero",
+    "expected_status": "manual_review",
+    "expected_file": "cal_misleading.py",
+    "hypothesis_terms": []
+  },
+  {
+    "case_id": "cal_conflict",
+    "file_path": "cal_conflict.py",
+    "source": "def language(preferences):\n    return preferences['language']\n",
+    "error_type": "KeyError",
+    "message": "'locale'",
+    "trace": "File \"cal_conflict.py\", line 2, in language\nKeyError: 'locale'",
+    "expected_status": "manual_review",
+    "expected_file": "cal_conflict.py",
+    "hypothesis_terms": []
+  },
+  {
+    "case_id": "cal_no_direction",
+    "file_path": "cal_no_direction.py",
+    "source": "def invoke(callback):\n    return callback()\n",
+    "error_type": "RuntimeError",
+    "message": "service operation failed",
+    "trace": "File \"cal_no_direction.py\", line 2, in invoke\nRuntimeError: service operation failed",
+    "expected_status": "manual_review",
+    "expected_file": "cal_no_direction.py",
+    "hypothesis_terms": []
+  }
+]

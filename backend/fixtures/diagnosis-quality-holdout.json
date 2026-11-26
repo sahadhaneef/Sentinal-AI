@@ -1,0 +1,40 @@
+[
+  {
+    "case_id": "holdout_region",
+    "file_path": "shipping.py",
+    "source": "def region(config):\n    return config[\"region\"]\n",
+    "error_type": "KeyError",
+    "message": "Missing shipping configuration region",
+    "trace": "File \"shipping.py\", line 2, in region\nKeyError: 'region'",
+    "expected_status": "completed",
+    "expected_file": "shipping.py",
+    "hypothesis_terms": [
+      "region"
+    ]
+  },
+  {
+    "case_id": "holdout_capacity",
+    "file_path": "capacity.py",
+    "source": "def fill(used, capacity):\n    return used / capacity\n",
+    "error_type": "ZeroDivisionError",
+    "message": "division by zero",
+    "trace": "File \"capacity.py\", line 2, in fill\nZeroDivisionError: division by zero",
+    "expected_status": "completed",
+    "expected_file": "capacity.py",
+    "hypothesis_terms": [
+      "capacity",
+      "zero"
+    ]
+  },
+  {
+    "case_id": "holdout_default",
+    "file_path": "preferences.py",
+    "source": "def locale(options):\n    return options.get(\"locale\", \"en\")\n",
+    "error_type": "KeyError",
+    "message": "Missing locale",
+    "trace": "File \"preferences.py\", line 2, in locale\nKeyError: 'locale'",
+    "expected_status": "manual_review",
+    "expected_file": "preferences.py",
+    "hypothesis_terms": []
+  }
+]

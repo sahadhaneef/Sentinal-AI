@@ -1,0 +1,68 @@
+[
+  {
+    "case_id": "ind_modulo",
+    "file_path": "ind_modulo.py",
+    "source": "def f(total, bucket_count):\n    return total % bucket_count\n",
+    "error_type": "ZeroDivisionError",
+    "message": "integer modulo by zero",
+    "trace": "File \"ind_modulo.py\", line 2, in f\nZeroDivisionError: integer modulo by zero",
+    "expected_status": "completed",
+    "expected_file": "ind_modulo.py",
+    "hypothesis_terms": []
+  },
+  {
+    "case_id": "ind_lookup",
+    "file_path": "ind_lookup.py",
+    "source": "def f(headers):\n    return headers[\"request_id\"]\n",
+    "error_type": "KeyError",
+    "message": "'request_id'",
+    "trace": "File \"ind_lookup.py\", line 2, in f\nKeyError: 'request_id'",
+    "expected_status": "completed",
+    "expected_file": "ind_lookup.py",
+    "hypothesis_terms": []
+  },
+  {
+    "case_id": "ind_index",
+    "file_path": "ind_index.py",
+    "source": "def f(queue, position):\n    return queue[position]\n",
+    "error_type": "IndexError",
+    "message": "list index out of range",
+    "trace": "File \"ind_index.py\", line 2, in f\nIndexError: list index out of range",
+    "expected_status": "completed",
+    "expected_file": "ind_index.py",
+    "hypothesis_terms": []
+  },
+  {
+    "case_id": "ind_null",
+    "file_path": "ind_null.py",
+    "source": "def f(account):\n    return account.owner\n",
+    "error_type": "AttributeError",
+    "message": "'NoneType' object has no attribute 'owner'",
+    "trace": "File \"ind_null.py\", line 2, in f\nAttributeError: 'NoneType' object has no attribute 'owner'",
+    "expected_status": "completed",
+    "expected_file": "ind_null.py",
+    "hypothesis_terms": []
+  },
+  {
+    "case_id": "ind_mislead",
+    "file_path": "ind_mislead.py",
+    "source": "def f(total, count):\n    return total + count\n    return total / count\n",
+    "error_type": "ZeroDivisionError",
+    "message": "division by zero",
+    "trace": "File \"ind_mislead.py\", line 2, in f\nZeroDivisionError: division by zero",
+    "expected_status": "manual_review",
+    "expected_file": "ind_mislead.py",
+    "hypothesis_terms": []
+  },
+  {
+    "case_id": "ind_ambiguous",
+    "file_path": "ind_ambiguous.py",
+    "source": "def f(a, b, c, d):\n    return a / b + c / d\n",
+    "error_type": "ZeroDivisionError",
+    "message": "division by zero",
+    "trace": "File \"ind_ambiguous.py\", line 2, in f\nZeroDivisionError: division by zero",
+    "expected_status": "manual_review",
+    "expected_file": "ind_ambiguous.py",
+    "hypothesis_terms": []
+  }
+]

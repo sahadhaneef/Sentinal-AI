@@ -52,6 +52,35 @@ def test_success_uses_real_citations_and_preserves_public_schema(scenario: Scena
 
 
 @pytest.mark.parametrize(
+    ("model_requests_review", "direction", "expected_status"),
+    [
+        (False, "Inspect the profile at the failing lookup.", "completed"),
+        (True, "Inspect the profile at the failing lookup.", "manual_review"),
+        (False, " ", "manual_review"),
+    ],
+)
+def test_bounded_diagnosis_respects_model_review_and_requires_direction(
+    scenario: Scenario, model_requests_review: bool, direction: str, expected_status: str
+) -> None:
+    scenario.provider.transform = lambda payload: (
+        payload
+        | {
+            "needs_manual_review": model_requests_review,
+            "uncertainty": "The upstream origin of the missing key is unknown.",
+            "suggested_direction": direction,
+        }
+    )
+    result = scenario.service.diagnose(scenario.request)
+    assert result.status == expected_status
+    if direction.strip():
+        assert "upstream origin" in result.uncertainty
+        assert result.hypotheses[0].evidence_ids == [result.evidence[0].evidence_id]
+    else:
+        assert result.error is not None
+        assert result.error.code == "INVALID_REASONING_OR_CITATION"
+
+
+@pytest.mark.parametrize(
     "changes",
     [
         {"repository_revision": "wrong"},

@@ -175,9 +175,94 @@ class EvidencePolicy:
                 )
             )
 
+    def check_operand(
+        self, request: RetrievalRequest, result: DiagnosisResult
+    ) -> list[QualityIssue]:
+        """Check the immediate cause for unambiguous Python zero division."""
+        if request.error_type != "ZeroDivisionError" or not result.hypotheses:
+            return []
+        frames = hints(request.stack_trace)
+        if not frames:
+            return [self._operand_issue()]
+        frame = frames[-1]
+        path = matching_path(frame.file_path, {item.file_path for item in result.evidence})
+        for hypothesis in result.hypotheses:
+            candidates = set()
+            for item in result.evidence:
+                if item.evidence_id not in hypothesis.evidence_ids or item.file_path != path:
+                    continue
+                if not item.start_line <= frame.line <= item.end_line:
+                    continue
+                candidates.update(self._divisor_names(item, frame.line))
+            if len(candidates) != 1:
+                return [self._operand_issue()]
+            divisor = re.escape(next(iter(candidates)))
+            # Require a relation, not merely independent occurrences of the identifier and zero.
+            if not re.search(
+                rf"\b{divisor}\b.?(?:\s+(?:may|might|could|must)(?:\s+have)?"
+                rf")?\s+(?:be|been|was|is|being|equals?)\s+(?:zero|0)\b"
+                rf"|\bzero\s+(?:value\s+of\s+|for\s+)?{divisor}\b",
+                hypothesis.statement,
+                re.I,
+            ):
+                return [self._operand_issue()]
+        return []
+
+    @staticmethod
+    def _operand_issue() -> QualityIssue:
+        return QualityIssue(
+            code="UNVERIFIED_CAUSAL_OPERAND",
+            action="Identify the zero divisor in an unambiguous cited failing operation.",
+        )
+
+    @staticmethod
+    def _divisor_names(item: RetrievedEvidence, line: int) -> set[str]:
+        if item.language != "python":
+            return set()
+        try:
+            tree = ast.parse(textwrap.dedent(item.excerpt))
+        except (SyntaxError, ValueError, RecursionError):
+            return set()
+        offset = line - item.start_line + 1
+        operations = [
+            node
+            for node in ast.walk(tree)
+            if isinstance(node, ast.BinOp)
+            and isinstance(node.op, (ast.Div, ast.FloorDiv, ast.Mod))
+            and node.lineno <= offset <= node.end_lineno
+        ]
+        if len(operations) == 1 and isinstance(operations[0].right, ast.Name):
+            return {operations[0].right.id}
+        return set()
+
     def check_findings(self, result: DiagnosisResult) -> list[QualityIssue]:
         """Reject narrative references outside the verified citation ranges and execution claims."""
         issues = []
+        for hypothesis in result.hypotheses:
+            claim = hypothesis.statement
+            excerpts = [
+                item.excerpt
+                for item in result.evidence
+                if item.evidence_id in hypothesis.evidence_ids
+            ]
+            prompt_echo = re.search(r"\b(user message|data envelope|system prompt)\b", claim, re.I)
+            zero_numerator = re.search(
+                r"\b(?:zero numerator|numerator (?:is|was|being|equals) zero)\b", claim, re.I
+            )
+            simple_division = any(
+                re.search(r"\b(?:return|yield)\s+\w+\s*(?://|/)\s*\w+\s*$", line)
+                for excerpt in excerpts
+                for line in excerpt.splitlines()
+            )
+            if (prompt_echo and not any(prompt_echo[0].lower() in x.lower() for x in excerpts)) or (
+                zero_numerator and simple_division and re.search(r"\bdivi\w+\b", claim, re.I)
+            ):
+                issues.append(
+                    QualityIssue(
+                        code="UNSUPPORTED_CAUSAL_CLAIM",
+                        action="Ground the proposed cause in the cited application operation.",
+                    )
+                )
         text = "\n".join(
             [
                 result.suggested_direction,

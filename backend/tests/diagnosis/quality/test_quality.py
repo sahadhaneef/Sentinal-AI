@@ -9,6 +9,8 @@ import pytest
 from pydantic import ValidationError
 from sqlalchemy import func, select
 
+from app.agents.diagnosis.code_rag.contracts import RetrievalRequest
+from app.agents.diagnosis.quality.evidence import EvidencePolicy
 from app.agents.diagnosis.quality.manager_adapter import from_manager, to_manager
 from app.agents.diagnosis.quality.recording import OutcomeRecorder
 from app.agents.diagnosis.quality.service import QualityDiagnosisService
@@ -25,6 +27,44 @@ def service(scenario: Scenario) -> QualityDiagnosisService:
         scenario.harness.service,
         provider=scenario.provider,
     )
+
+
+def test_cited_division_checks_the_claim_not_just_the_citation(scenario: Scenario) -> None:
+    result = service(scenario).diagnose(scenario.request).result
+    result.evidence[0].excerpt = "    return used / capacity"
+    hypothesis = result.hypotheses[0]
+    hypothesis.statement = "Division failed because the numerator was zero."
+    assert "UNSUPPORTED_CAUSAL_CLAIM" in {
+        issue.code for issue in EvidencePolicy().check_findings(result)
+    }
+    hypothesis.statement = "Division failed because capacity may have been zero."
+    assert not EvidencePolicy().check_findings(result)
+
+
+@pytest.mark.parametrize(
+    ("operation", "statement", "supported"),
+    [
+        ("total % bucket_count", "Modulo failed because bucket_count was zero.", True),
+        ("total / bucket_count", "Division failed because total was zero.", False),
+        ("total / bucket_count", "Division by zero occurred.", False),
+        ("total / bucket_count + a / b", "The divisor bucket_count was zero.", False),
+        ("total + bucket_count", "The divisor bucket_count was zero.", False),
+    ],
+)
+def test_zero_operand_requires_a_unique_cited_operation(
+    scenario: Scenario, operation: str, statement: str, supported: bool
+) -> None:
+    result = service(scenario).diagnose(scenario.request).result
+    item = result.evidence[0]
+    item.excerpt = "    return " + operation
+    result.hypotheses[0].statement = statement
+    request = RetrievalRequest(
+        application_id=result.application_id,
+        repository_revision=result.input_revision,
+        error_type="ZeroDivisionError",
+        stack_trace=f'File "{item.file_path}", line {item.start_line}\nZeroDivisionError: zero',
+    )
+    assert (not EvidencePolicy().check_operand(request, result)) is supported
 
 
 def test_quality_keeps_facts_hypotheses_provenance_and_source_unchanged(scenario: Scenario) -> None:
@@ -75,6 +115,7 @@ def test_unverifiable_ranges_and_references_never_reach_llm(
         ("The failure originates in app.py line 900.", "NARRATIVE_CITATION_INVALID"),
         ("The failure originates in config.yaml:900.", "NARRATIVE_CITATION_INVALID"),
         ("This is definitely the proven root cause.", "UNSUPPORTED_CERTAINTY"),
+        ("The missing key is in the data envelope.", "UNSUPPORTED_CAUSAL_CLAIM"),
         ("I ran the tests and all tests passed.", "UNSUPPORTED_EXECUTION_CLAIM"),
         ("The patch was applied and recovery was verified.", "UNSUPPORTED_EXECUTION_CLAIM"),
     ],

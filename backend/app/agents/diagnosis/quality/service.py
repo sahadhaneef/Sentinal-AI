@@ -38,6 +38,7 @@ class QualityRag(CodeRag):
             control=base.control,
         )
         self.base, self.policy = base, policy
+        self.retrieval_request: RetrievalRequest | None = None
         self.assessment = QualityAssessment()
         self.provenance = RetrievalProvenance(
             application_id=request.application_id,
@@ -46,6 +47,7 @@ class QualityRag(CodeRag):
         )
 
     def retrieve(self, request: RetrievalRequest) -> RetrievalResult:
+        self.retrieval_request = request
         self.control.checkpoint("before_retrieval")
         result = self.base.retrieve(request)
         self.provenance.query_hash = digest(canonical(request.model_dump()))
@@ -116,6 +118,10 @@ class QualityDiagnosisService:
         )
         result = service.diagnose(request)
         gateway.assessment.issues.extend(self.policy.check_findings(result))
+        if gateway.retrieval_request is not None:
+            gateway.assessment.issues.extend(
+                self.policy.check_operand(gateway.retrieval_request, result)
+            )
         if gateway.assessment.issues:
             issue = gateway.assessment.issues[0]
             result = DiagnosisResult.model_validate(
