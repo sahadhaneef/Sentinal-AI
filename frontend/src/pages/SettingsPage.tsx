@@ -74,7 +74,7 @@ export function SettingsPage() {
               <p>
                 {isDemo
                   ? 'A local developer demonstration identity. No real authentication, code execution or repository changes.'
-                  : 'Requests use the configured backend and its session. No automatic fallback to demo data.'}
+                  : 'Read-only database API. Workflow controls and browser authentication are deferred. No automatic fallback to demo data.'}
               </p>
             </div>
           </div>

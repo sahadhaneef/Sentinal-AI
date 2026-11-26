@@ -90,8 +90,8 @@ export function AppShell() {
         <div className="profile">
           <div className="avatar">{isDemo ? 'DR' : 'U'}</div>
           <div>
-            <strong>{isDemo ? 'Demo reviewer' : 'Workspace user'}</strong>
-            <small>{isDemo ? 'Local demonstration identity' : 'Backend session required'}</small>
+            <strong>{isDemo ? 'Demo reviewer' : 'Read-only workspace'}</strong>
+            <small>{isDemo ? 'Local demonstration identity' : 'Local prototype access'}</small>
           </div>
         </div>
       </div>

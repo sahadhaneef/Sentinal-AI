@@ -5,6 +5,7 @@ import { useApplication, useApplications, useIncidents, useMonitoring } from '..
 import { Badge, Busy, Dialog, Empty, Heading, Panel, QueryState } from '../components/ui';
 import { useNotify } from '../components/feedback';
 import { IncidentList } from '../components/incidents';
+import { isDemo } from '../api/client';
 export function ApplicationsPage() {
   const q = useApplications(),
     [search, setSearch] = useState(''),
@@ -98,11 +99,13 @@ export function ApplicationDetailPage() {
                 </span>
               </div>
               <p>Supported errors: {a.supported_errors.join(', ')}</p>
-              <button className="button spaced" onClick={() => setConfirm(true)}>
+              <button className="button spaced" disabled={!isDemo} onClick={() => setConfirm(true)}>
                 {a.monitoring_enabled ? 'Stop' : 'Start'} monitoring
               </button>
               <p className="notice">
-                Monitoring is simulated in demo mode. Server workspace paths remain backend-owned.
+                {isDemo
+                  ? 'Monitoring is simulated in demo mode. Server workspace paths remain backend-owned.'
+                  : 'Read-only API phase. A monitoring worker and monitoring controls are not implemented yet.'}
               </p>
             </Panel>
             <Panel
